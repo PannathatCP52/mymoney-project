@@ -1,42 +1,16 @@
-/* เพิ่มความกว้างของ Container */
-.app-container {
-    display: flex;
-    max-width: 1600px; /* ขยายให้กว้างขึ้น */
-    margin: 0 auto;
-    min-height: 100vh;
+/* เพิ่มเติมจากเดิม */
+.login-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--bg-dark); display: flex; justify-content: center; align-items: center; z-index: 1000;
 }
+.login-card { background: var(--card-bg); padding: 40px; border-radius: 20px; text-align: center; }
 
-.main-content {
-    flex: 1;
-    padding: 40px;
-    background: #0b0e14;
+/* Light Theme support */
+.light-theme {
+    --bg-dark: #f0f2f5;
+    --sidebar-bg: #ffffff;
+    --card-bg: #ffffff;
+    --text-main: #1a1a1a;
+    --text-dim: #65676b;
 }
-
-/* ตาราง Real-time Exchange Rate */
-.exchange-panel {
-    background: #1b1e2e;
-    padding: 25px;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-}
-
-.exchange-table {
-    width: 100%;
-    margin-top: 15px;
-    border-collapse: collapse;
-}
-
-.exchange-table td, .exchange-table th {
-    padding: 15px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    text-align: left;
-}
-
-/* ปรับให้ Net Worth ดูเด่นแบบสไลด์ */
-.net-worth-card {
-    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
-    padding: 60px 40px; /* เพิ่มความยาวกว้าง */
-    border-radius: 30px;
-    margin-bottom: 40px;
-    border: 1px solid rgba(255,255,255,0.1);
-}
+.light-theme .grid-item { border: 1px solid #ddd; }
