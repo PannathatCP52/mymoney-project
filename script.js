@@ -44,9 +44,7 @@ async function fetchExternalData() {
             { p: "JPY/THB", r: (data.rates.THB / data.rates.JPY).toFixed(4) },
             { p: "EUR/THB", r: (data.rates.THB / data.rates.EUR).toFixed(2) }
         ];
-        if(tableBody) {
-            tableBody.innerHTML = list.map(i => `<tr><td>${i.p}</td><td>${i.r}</td><td class="income">Live</td></tr>`).join('');
-        }
+        tableBody.innerHTML = list.map(i => `<tr><td>${i.p}</td><td>${i.r}</td><td class="income">Live</td></tr>`).join('');
         
         document.getElementById('goldSellLabel').innerText = goldPriceThai.toLocaleString() + " ฿";
         document.getElementById('goldBuyLabel').innerText = (goldPriceThai - 100).toLocaleString() + " ฿";
@@ -54,7 +52,6 @@ async function fetchExternalData() {
     } catch (e) { console.error("API Error", e); }
 }
 
-// แก้ไข addTransaction เพื่อให้เรียกใช้งานได้
 async function addTransaction() {
     const desc = document.getElementById('description').value;
     const amt = parseFloat(document.getElementById('amount').value);
@@ -79,55 +76,30 @@ function updateDashboard() {
     document.getElementById('netWorthUSD').innerText = "$" + (total / (window.usdRate || 36)).toLocaleString(undefined,{maximumFractionDigits:2});
     
     renderHistory();
-    // เรียกฟังก์ชัน renderCharts ที่ถูกประกาศไว้ด้านล่าง
     renderCharts(cash, goldValue);
 }
 
 function renderHistory() {
     const list = document.getElementById('transactionList');
-    if(list) {
-        list.innerHTML = transactions.slice().reverse().map(tx => `
-            <li>
-                <span>${tx.description || "รายการทั่วไป"}</span>
-                <span class="${tx.type}">${tx.type==='income'?'+':'-'}${tx.amount.toLocaleString()}</span>
-            </li>
-        `).join('');
-    }
+    list.innerHTML = transactions.slice().reverse().map(tx => `
+        <li>
+            <span>${tx.description || "รายการทั่วไป"}</span>
+            <span class="${tx.type}">${tx.type==='income'?'+':'-'}${tx.amount.toLocaleString()}</span>
+        </li>
+    `).join('');
 }
 
-// 5. Chart Logic - แก้ปัญหา renderChart is not defined
-// ปรับปรุงให้รองรับขนาดกรอบที่ขยายใหญ่ขึ้น
+// 5. Chart Logic (แก้ ReferenceError)
 function renderCharts(cash, gold) {
     const barCtx = document.getElementById('assetBarChart')?.getContext('2d');
     const pieCtx = document.getElementById('netWorthChart')?.getContext('2d');
-
-    // ตั้งค่าสีตัวอักษรตาม Theme
-    const textColor = document.body.classList.contains('light-theme') ? '#1a1a1a' : '#ffffff';
 
     if(barCtx) {
         if(charts.bar) charts.bar.destroy();
         charts.bar = new Chart(barCtx, {
             type: 'bar',
-            data: { 
-                labels: ['เงินสด', 'ทองคำ'], 
-                datasets: [{ 
-                    data: [cash, gold], 
-                    backgroundColor: ['#6366f1', '#fbbf24'],
-                    borderRadius: 10
-                }] 
-            },
-            options: { 
-                responsive: true, 
-                maintainAspectRatio: false, // บังคับให้กราฟขยายตามกรอบ
-                scales: {
-                    y: { ticks: { color: textColor } },
-                    x: { ticks: { color: textColor } }
-                },
-                plugins: {
-                    legend: { display: false },
-                    title: { display: true, text: 'เปรียบเทียบมูลค่าสินทรัพย์', color: textColor, font: { size: 16 } }
-                }
-            }
+            data: { labels: ['Cash', 'Gold'], datasets: [{ data: [cash, gold], backgroundColor: ['#6366f1', '#fbbf24'] }] },
+            options: { responsive: true, maintainAspectRatio: false }
         });
     }
 
@@ -135,22 +107,8 @@ function renderCharts(cash, gold) {
         if(charts.pie) charts.pie.destroy();
         charts.pie = new Chart(pieCtx, {
             type: 'doughnut',
-            data: { 
-                labels: ['เงินสด', 'ทองคำ'], 
-                datasets: [{ 
-                    data: [cash, gold], 
-                    backgroundColor: ['#6366f1', '#fbbf24'], 
-                    borderWidth: 0 
-                }] 
-            },
-            options: { 
-                responsive: true, 
-                maintainAspectRatio: false, // บังคับให้กราฟขยายตามกรอบ
-                plugins: {
-                    legend: { position: 'bottom', labels: { color: textColor, font: { size: 14 } } },
-                    title: { display: true, text: 'สัดส่วนสินทรัพย์ (%)', color: textColor, font: { size: 18 } }
-                }
-            }
+            data: { labels: ['Cash', 'Gold'], datasets: [{ data: [cash, gold], backgroundColor: ['#6366f1', '#fbbf24'], borderWidth: 0 }] },
+            options: { responsive: true, maintainAspectRatio: false }
         });
     }
 }
