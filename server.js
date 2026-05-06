@@ -6,6 +6,8 @@ const mongoose = require('mongoose');
 const app = express();
 app.use(express.json());
 app.use(cors());
+// สั่งให้เซิร์ฟเวอร์แสดงไฟล์ HTML หน้าเว็บด้วย
+app.use(express.static(__dirname));
 
 // --- เชื่อมต่อฐานข้อมูล MongoDB Atlas (ดึงรหัสผ่านจากไฟล์ .env) ---
 mongoose.connect(process.env.MONGO_URI)
