@@ -1,63 +1,41 @@
 let currentUser = null;
 let transactions = [];
-let goldPrice = 41500;
-let usdRate = 36.5;
+let goldPrice = 41800; // ค่าเริ่มต้น
+let usdRate = 36.5;    // ค่าเริ่มต้น
 let charts = {};
 
 function toggleTheme() {
     const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
+    if(currentUser) updateDashboard(); // รีเฟรชสีตัวอักษรในกราฟ
 }
 
-// ระบบอ่านไฟล์ Statement (CSV/TXT)
-function handleFileUpload() {
-    const file = document.getElementById('statementFile').files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-        const text = e.target.result;
-        showNotification("กำลังประมวลผลไฟล์...");
-        // ค้นหาตัวเลขในไฟล์ (Simple Parser)
-        const lines = text.split('\n');
-        let importedCount = 0;
-        for(let line of lines) {
-            const match = line.match(/(\d+\.?\d*)/); // หาตัวเลขตัวแรกในบรรทัด
-            if(match && line.length > 5) {
-                const amt = parseFloat(match[0]);
-                await fetch('/api/transactions', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: currentUser._id, description: "Imported: "+line.substring(0,15), amount: amt, type: 'expense', category: 'Statement' })
-                });
-                importedCount++;
-            }
-        }
-        showNotification(`นำเข้าสำเร็จ ${importedCount} รายการ`);
-        fetchTransactions();
-    };
-    reader.readAsText(file);
+if(localStorage.getItem('theme')) {
+    document.documentElement.setAttribute('data-theme', localStorage.getItem('theme'));
 }
 
 async function login() {
     const user = document.getElementById('username').value;
-    if (!user) return;
+    if (!user) return showNotification("กรุณาใส่ชื่อผู้ใช้", "error");
     currentUser = { _id: user, username: user };
     document.getElementById('loginSection').style.display = 'none';
     document.getElementById('dashboardSection').style.display = 'block';
     document.getElementById('logoutBtn').style.display = 'block';
     document.getElementById('userDisplay').innerText = user;
     
-    // ดึงข้อมูล API ภายนอก
+    await fetchExternalData();
+    fetchTransactions();
+}
+
+async function fetchExternalData() {
     try {
-        const res = await fetch('https://open.er-api.com/v6/latest/USD');
-        const data = await res.json();
-        usdRate = data.rates.THB;
+        const resRate = await fetch('https://open.er-api.com/v6/latest/USD');
+        const dataRate = await resRate.json();
+        usdRate = dataRate.rates.THB;
         document.getElementById('rateLabel').innerText = usdRate.toFixed(2);
         document.getElementById('goldPriceLabel').innerText = goldPrice.toLocaleString();
-    } catch(e) {}
-    
-    fetchTransactions();
+    } catch (e) { console.log("API Error"); }
 }
 
 async function fetchTransactions() {
@@ -70,16 +48,42 @@ async function addTransaction() {
     const desc = document.getElementById('description').value;
     const amt = parseFloat(document.getElementById('amount').value);
     const type = document.getElementById('type').value;
-    if (!desc || isNaN(amt)) return;
+    if (!desc || isNaN(amt)) return showNotification("กรอกข้อมูลไม่ครบ", "error");
 
     await fetch('/api/transactions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: currentUser._id, description: desc, amount: amt, type, category: 'ทั่วไป' })
+        body: JSON.stringify({ userId: currentUser._id, description: desc, amount: amt, type, category: 'Cash' })
     });
     document.getElementById('description').value = '';
     document.getElementById('amount').value = '';
+    showNotification("บันทึกเรียบร้อย");
     fetchTransactions();
+}
+
+function handleFileUpload() {
+    const file = document.getElementById('statementFile').files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        const text = e.target.result;
+        showNotification("กำลังอ่านไฟล์...");
+        const lines = text.split('\n');
+        for(let line of lines) {
+            const match = line.match(/(\d+\.?\d*)/);
+            if(match && line.length > 5) {
+                const amt = parseFloat(match[0]);
+                await fetch('/api/transactions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUser._id, description: "Statement: "+line.substring(0,10), amount: amt, type: 'expense', category: 'Import' })
+                });
+            }
+        }
+        showNotification("นำเข้าข้อมูลสำเร็จ");
+        fetchTransactions();
+    };
+    reader.readAsText(file);
 }
 
 function updateDashboard() {
@@ -90,53 +94,101 @@ function updateDashboard() {
     transactions.forEach(tx => {
         const d = new Date(tx.date);
         const amt = tx.amount;
+        const isToday = d.toDateString() === now.toDateString();
+        const isThisMonth = d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        
         if(tx.type === 'income') {
             cash += amt;
-            if(d.toDateString() === now.toDateString()) summary.day.i += amt;
+            if(isToday) summary.day.i += amt;
             if(now - d < 7*24*60*60*1000) summary.week.i += amt;
-            if(d.getMonth() === now.getMonth()) summary.month.i += amt;
+            if(isThisMonth) summary.month.i += amt;
             if(d.getFullYear() === now.getFullYear()) summary.year.i += amt;
         } else {
             cash -= amt;
-            if(d.toDateString() === now.toDateString()) summary.day.e += amt;
+            if(isToday) summary.day.e += amt;
             if(now - d < 7*24*60*60*1000) summary.week.e += amt;
-            if(d.getMonth() === now.getMonth()) summary.month.e += amt;
+            if(isThisMonth) summary.month.e += amt;
             if(d.getFullYear() === now.getFullYear()) summary.year.e += amt;
         }
     });
 
-    const goldVal = (parseFloat(document.getElementById('goldQty').value) || 0) * goldPrice;
-    const netTHB = cash + goldVal;
+    const goldQty = parseFloat(document.getElementById('goldQty').value) || 0;
+    const goldValue = goldQty * goldPrice;
+    const netTHB = cash + goldValue;
     
     document.getElementById('netWorthTHB').innerText = netTHB.toLocaleString() + " THB";
     document.getElementById('netWorthUSD').innerText = "$" + (netTHB / usdRate).toLocaleString(undefined, {maximumFractionDigits:2});
     
-    // อัปเดตตัวเลขรายวัน/สัปดาห์...
+    // อัปเดต Summary Labels
     document.getElementById('dayI').innerText = "+"+summary.day.i; document.getElementById('dayE').innerText = "-"+summary.day.e;
     document.getElementById('weekI').innerText = "+"+summary.week.i; document.getElementById('weekE').innerText = "-"+summary.week.e;
     document.getElementById('monthI').innerText = "+"+summary.month.i; document.getElementById('monthE').innerText = "-"+summary.month.e;
     document.getElementById('yearI').innerText = "+"+summary.year.i; document.getElementById('yearE').innerText = "-"+summary.year.e;
 
-    renderCharts(cash, goldVal);
+    renderCharts(cash, goldValue, netTHB);
     renderList();
 }
 
-function renderCharts(cash, gold) {
-    if(charts.net) charts.net.destroy();
-    charts.net = new Chart(document.getElementById('netWorthChart'), {
-        type: 'pie',
+function renderCharts(cash, gold, total) {
+    const textColor = getComputedStyle(document.documentElement).getPropertyValue('--chart-label').trim();
+
+    // 1. Bar Chart: เปรียบเทียบมูลค่า (Requested)
+    if(charts.bar) charts.bar.destroy();
+    charts.bar = new Chart(document.getElementById('assetBarChart'), {
+        type: 'bar',
         data: {
-            labels: ['เงินสดสะสม', 'มูลค่าทองคำ'],
-            datasets: [{ data: [cash, gold], backgroundColor: ['#00f2fe', '#FFD700'] }]
+            labels: ['เงินสด', 'ทองคำ', 'รวมทั้งหมด'],
+            datasets: [{
+                label: 'มูลค่า (บาท)',
+                data: [cash, gold, total],
+                backgroundColor: ['#00f2fe', '#FFD700', '#6a11cb'],
+                borderRadius: 10
+            }]
         },
-        options: { plugins: { title: { display:true, text:'สัดส่วนความมั่งคั่ง', color:'#888' } } }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, ticks: { color: textColor } },
+                x: { ticks: { color: textColor } }
+            },
+            plugins: {
+                legend: { display: false },
+                title: { display: true, text: 'เปรียบเทียบมูลค่าสินทรัพย์', color: textColor, font: { size: 16 } }
+            }
+        }
+    });
+
+    // 2. Pie Chart: สัดส่วน
+    if(charts.pie) charts.pie.destroy();
+    charts.pie = new Chart(document.getElementById('netWorthChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['เงินสด', 'ทองคำ'],
+            datasets: [{
+                data: [cash, gold],
+                backgroundColor: ['#00f2fe', '#FFD700'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { color: textColor } },
+                title: { display: true, text: 'สัดส่วนสินทรัพย์ (%)', color: textColor, font: { size: 16 } }
+            }
+        }
     });
 }
 
 function renderList() {
     const list = document.getElementById('transactionList');
     list.innerHTML = transactions.slice(-10).reverse().map(tx => `
-        <li><span>${tx.description}</span><span class="${tx.type}">${tx.type==='income'?'+':'-'}${tx.amount}</span></li>
+        <li>
+            <span>${tx.description}</span>
+            <span class="${tx.type}">${tx.type==='income'?'+':'-'}${tx.amount.toLocaleString()}</span>
+        </li>
     `).join('');
 }
 
