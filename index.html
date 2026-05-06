@@ -1,98 +1,82 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Wealth Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>My Wealth - Asset Analytics</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="app-container">
-        <aside class="sidebar">
-            <div class="logo">WEALTH AI</div>
-            <nav>
-                <div class="nav-item active"><i class="fas fa-home"></i> Home</div>
-                <div class="nav-item"><i class="fas fa-chart-line"></i> Analytics</div>
-                <div class="nav-item"><i class="fas fa-wallet"></i> Assets</div>
-            </nav>
-            <button class="btn-logout" onclick="location.reload()">Logout</button>
-        </aside>
+    <div id="notification-container"></div>
 
-        <main class="main-content">
-            <header class="top-bar">
-                <div class="search-box"><i class="fas fa-search"></i> Search Assets...</div>
-                <div class="user-profile">Status: <span class="status-online">Online</span></div>
-            </header>
+    <div class="container">
+        <div class="header-actions">
+            <button id="themeToggle" onclick="toggleTheme()">🌓 สลับโหมด</button>
+            <button id="logoutBtn" onclick="logout()" style="display:none;">ออกจากระบบ</button>
+        </div>
 
-            <section class="hero-section">
-                <div class="net-worth-card">
-                    <div class="card-info">
-                        <h3>Total Net Worth</h3>
-                        <h1 id="netWorthTHB">0 THB</h1>
-                        <p id="netWorthUSD">$0.00</p>
+        <section id="loginSection">
+            <h1>My Wealth 💰</h1>
+            <p class="text-center">เข้าสู่ระบบเพื่อจัดการสินทรัพย์และวิเคราะห์ Statement</p>
+            <input type="text" id="username" placeholder="ชื่อผู้ใช้งาน">
+            <input type="password" id="password" placeholder="รหัสผ่าน">
+            <button onclick="login()" style="width: 100%;">เข้าสู่ระบบ</button>
+        </section>
+
+        <section id="dashboardSection" style="display:none;">
+            <div class="asset-card">
+                <h3>มูลค่าสินทรัพย์สุทธิ (Net Worth)</h3>
+                <h1 id="netWorthTHB">0 THB</h1>
+                <h3 id="netWorthUSD">$0.00 USD</h3>
+                <p class="api-info">ทองคำ: <span id="goldPriceLabel">...</span> | 1 USD = <span id="rateLabel">...</span> THB</p>
+            </div>
+
+            <div class="time-grid">
+                <div class="t-card"><h4>วันนี้</h4><p class="inc" id="dayI">0</p><p class="exp" id="dayE">0</p></div>
+                <div class="t-card"><h4>สัปดาห์นี้</h4><p class="inc" id="weekI">0</p><p class="exp" id="weekE">0</p></div>
+                <div class="t-card"><h4>เดือนนี้</h4><p class="inc" id="monthI">0</p><p class="exp" id="monthE">0</p></div>
+                <div class="t-card"><h4>ปีนี้</h4><p class="inc" id="yearI">0</p><p class="exp" id="yearE">0</p></div>
+            </div>
+
+            <div class="main-grid">
+                <div class="input-panel">
+                    <div class="card">
+                        <h3>เพิ่มรายการเงินสด</h3>
+                        <input type="text" id="description" placeholder="รายละเอียด">
+                        <input type="number" id="amount" placeholder="จำนวนเงิน">
+                        <select id="type">
+                            <option value="income">รายรับ (+)</option>
+                            <option value="expense">รายจ่าย (-)</option>
+                        </select>
+                        <button onclick="addTransaction()" style="width:100%">บันทึก</button>
                     </div>
-                    <div class="gold-live-box">
-                        <div class="gold-row">
-                            <span><i class="fas fa-store"></i> ทองคำแท่ง (ขาย):</span>
-                            <span id="goldSellLabel" class="text-gold">--</span>
-                        </div>
-                        <div class="gold-row">
-                            <span><i class="fas fa-hand-holding-usd"></i> ทองคำแท่ง (ซื้อ):</span>
-                            <span id="goldBuyLabel" class="text-gold">--</span>
-                        </div>
+                    
+                    <div class="card" style="margin-top:15px;">
+                        <h3>จัดการสินทรัพย์</h3>
+                        <label>ทองคำที่ถือ (บาททอง):</label>
+                        <input type="number" id="goldQty" value="0" onchange="updateDashboard()">
+                    </div>
+
+                    <div class="card" style="margin-top:15px; border: 2px dashed var(--accent-blue);">
+                        <h3>📂 อ่าน Bank Statement</h3>
+                        <input type="file" id="statementFile" accept=".csv,.txt" onchange="handleFileUpload()">
                     </div>
                 </div>
-            </section>
 
-            <div class="dashboard-grid">
-                <div class="grid-item exchange-panel">
-                    <h3><i class="fas fa-globe"></i> Real-time Exchange Rates</h3>
-                    <p class="update-time">Update: <span id="lastUpdate">--:--:--</span></p>
-                    <table class="exchange-table">
-                        <thead>
-                            <tr>
-                                <th>Currency</th>
-                                <th>Rate (THB)</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="exchangeBody">
-                            </tbody>
-                    </table>
-                </div>
-
-                <div class="grid-item chart-panel">
-                    <h3>Asset Comparison</h3>
-                    <div class="canvas-holder">
+                <div class="chart-panel">
+                    <div class="chart-box">
                         <canvas id="assetBarChart"></canvas>
                     </div>
-                </div>
-
-                <div class="grid-item input-panel">
-                    <h3>Add Transaction</h3>
-                    <input type="text" id="description" placeholder="Description (เช่น ซื้อของ, เงินเดือน)">
-                    <input type="number" id="amount" placeholder="Amount">
-                    <select id="type">
-                        <option value="income">Income (+)</option>
-                        <option value="expense">Expense (-)</option>
-                    </select>
-                    <button onclick="addTransaction()" class="btn-primary">Save Data</button>
-                    
-                    <hr>
-                    <div class="gold-input">
-                        <label>Gold Amount (Baht):</label>
-                        <input type="number" id="goldQty" value="1" onchange="updateDashboard()">
+                    <div class="chart-box">
+                        <canvas id="netWorthChart"></canvas>
                     </div>
                 </div>
-
-                <div class="grid-item history-panel">
-                    <h3>Recent History</h3>
-                    <ul id="transactionList"></ul>
-                </div>
             </div>
-        </main>
+
+            <h3>ประวัติรายการล่าสุด</h3>
+            <ul id="transactionList" class="res-list"></ul>
+        </section>
     </div>
     <script src="script.js"></script>
 </body>
