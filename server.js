@@ -17,9 +17,10 @@ mongoose.connect(process.env.MONGO_URI)
 // --- สร้างโครงสร้างข้อมูล (Schema) ---
 const transactionSchema = new mongoose.Schema({
     userId: String,
+    description: String, // ต้องมั่นใจว่าใน Schema ใช้คำว่า description
+    amount: Number,
     type: String,
     category: String,
-    amount: Number,
     date: { type: Date, default: Date.now }
 });
 const Transaction = mongoose.model('Transaction', transactionSchema);
