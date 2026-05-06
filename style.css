@@ -1,106 +1,164 @@
-/* ตั้งค่าสีพื้นฐาน (Light Mode) */
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap');
+
 :root {
-    --bg-color: #f4f4f9;
+    --bg-color: #f4f7f6;
     --text-color: #333333;
     --card-bg: #ffffff;
     --primary-color: #4CAF50;
-    --border-radius: 8px;
+    --primary-hover: #45a049;
+    --danger-color: #ff4c4c;
+    --border-color: #e0e0e0;
 }
 
-/* ตั้งค่าสีโหมดมืด (Dark Mode - Tier C) */
 [data-theme="dark"] {
-    --bg-color: #1a1a2e;
-    --text-color: #e6e6e6;
-    --card-bg: #16213e;
-    --primary-color: #0f3460;
+    --bg-color: #121212;
+    --text-color: #f1f1f1;
+    --card-bg: #1e1e1e;
+    --border-color: #333333;
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
+    font-family: 'Kanit', sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    line-height: 1.6;
     padding: 20px;
-    transition: all 0.3s ease;
 }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+/* Container & Cards */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
 }
 
+section {
+    background-color: var(--card-bg);
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+    transition: background-color 0.3s ease;
+}
+
+[data-theme="dark"] section {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Typography */
+h1, h2, h3 {
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.text-center { text-align: center; }
+
+/* Buttons */
 button {
     background-color: var(--primary-color);
     color: white;
     border: none;
-    padding: 10px 15px;
-    border-radius: var(--border-radius);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: 'Kanit', sans-serif;
     cursor: pointer;
-    font-weight: bold;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 button:hover {
-    opacity: 0.8;
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
+button#themeToggle {
+    background-color: #36A2EB;
+    float: right;
+}
+
+button#logoutBtn {
+    background-color: var(--danger-color);
+    float: right;
+    margin-top: -5px;
+}
+
+/* Forms & Inputs */
 input, select {
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: var(--border-radius);
-    border: 1px solid #ccc;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Kanit', sans-serif;
+    font-size: 16px;
+    transition: border-color 0.3s;
 }
 
-.card {
-    background-color: var(--card-bg);
-    padding: 20px;
-    border-radius: var(--border-radius);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-color);
 }
 
-.summary-cards {
-    display: flex;
-    gap: 20px;
-}
-
-.summary-cards .card {
-    flex: 1;
-    text-align: center;
-}
-
-.form-group {
+/* Layout for Inputs */
+.input-group {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
 }
 
-.charts-container {
+.input-group > * {
+    flex: 1;
+    min-width: 150px;
+}
+
+/* Lists */
+ul {
+    list-style: none;
+    margin-top: 15px;
+}
+
+ul li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+ul li:last-child {
+    border-bottom: none;
+}
+
+ul li button {
+    background-color: var(--danger-color);
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+/* Charts Area */
+.chart-container {
     display: flex;
     gap: 20px;
     flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
 }
 
 .chart-box {
     flex: 1;
     min-width: 300px;
-}
-
-ul {
-    list-style-type: none;
-}
-
-li {
     background-color: var(--bg-color);
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: var(--border-radius);
-    display: flex;
-    justify-content: space-between;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
 }
