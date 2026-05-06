@@ -3,30 +3,55 @@ let transactions = [];
 let expenseChart = null;
 let balanceChart = null;
 
+// ฟังก์ชันสำหรับแสดง Notification Toast
+function showNotification(message, type = 'success') {
+    const container = document.getElementById('notification-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerText = message;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
+}
+
 async function login() {
     const user = document.getElementById('username').value;
     const pass = document.getElementById('password').value;
-    if (!user || !pass) return alert('กรุณากรอกให้ครบ');
+    if (!user || !pass) return showNotification('กรุณากรอกให้ครบทุกช่อง', 'error');
 
-    const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: user, password: pass })
-    });
-    const data = await res.json();
-    if (res.ok) {
-        currentUser = data.user;
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('dashboardSection').style.display = 'block';
-        document.getElementById('userDisplay').innerText = currentUser.username;
-        fetchTransactions();
-    } else { alert(data.message); }
+    try {
+        const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: user, password: pass })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            currentUser = data.user;
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
+            document.getElementById('userDisplay').innerText = currentUser.username;
+            showNotification(`ยินดีต้อนรับคุณ ${currentUser.username}`);
+            fetchTransactions();
+        } else {
+            showNotification(data.message, 'error');
+        }
+    } catch (e) {
+        showNotification('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+    }
 }
 
 async function fetchTransactions() {
-    const res = await fetch(`/api/transactions/${currentUser._id}`);
-    transactions = await res.json();
-    updateDashboard();
+    try {
+        const res = await fetch(`/api/transactions/${currentUser._id}`);
+        transactions = await res.json();
+        updateDashboard();
+    } catch (e) {
+        showNotification('โหลดข้อมูลไม่สำเร็จ', 'error');
+    }
 }
 
 async function addTransaction() {
@@ -35,14 +60,21 @@ async function addTransaction() {
     const type = document.getElementById('type').value;
     const cat = document.getElementById('category').value;
 
-    if (!desc || !amt) return alert('กรุณากรอกข้อมูล');
+    if (!desc || isNaN(amt)) return showNotification('กรุณากรอกรายละเอียดและจำนวนเงินให้ถูกต้อง', 'warning');
 
-    await fetch('/api/transactions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: currentUser._id, description: desc, amount: amt, type, category: cat })
-    });
-    fetchTransactions();
+    try {
+        await fetch('/api/transactions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: currentUser._id, description: desc, amount: amt, type, category: cat })
+        });
+        document.getElementById('description').value = '';
+        document.getElementById('amount').value = '';
+        showNotification('บันทึกรายการสำเร็จ');
+        fetchTransactions();
+    } catch (e) {
+        showNotification('บันทึกไม่สำเร็จ', 'error');
+    }
 }
 
 function updateDashboard() {
@@ -54,7 +86,9 @@ function updateDashboard() {
 
     const now = new Date();
     const startOfDay = new Date().setHours(0,0,0,0);
-    const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay())).setHours(0,0,0,0);
+    const startOfWeek = new Date();
+    startOfWeek.setDate(now.getDate() - now.getDay());
+    startOfWeek.setHours(0,0,0,0);
 
     transactions.forEach(tx => {
         const amt = tx.amount;
@@ -64,20 +98,24 @@ function updateDashboard() {
         if (tx.type === 'income') {
             totalIncome += amt;
             if (t >= startOfDay) summary.day.i += amt;
-            if (t >= startOfWeek) summary.week.i += amt;
-            if (d.getMonth() === new Date().getMonth()) summary.month.i += amt;
-            if (d.getFullYear() === new Date().getFullYear()) summary.year.i += amt;
+            if (t >= startOfWeek.getTime()) summary.week.i += amt;
+            if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) summary.month.i += amt;
+            if (d.getFullYear() === now.getFullYear()) summary.year.i += amt;
         } else {
             totalExpense += amt;
             expenseCategories[tx.category] = (expenseCategories[tx.category] || 0) + amt;
             if (t >= startOfDay) summary.day.e += amt;
-            if (t >= startOfWeek) summary.week.e += amt;
-            if (d.getMonth() === new Date().getMonth()) summary.month.e += amt;
-            if (d.getFullYear() === new Date().getFullYear()) summary.year.e += amt;
+            if (t >= startOfWeek.getTime()) summary.week.e += amt;
+            if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) summary.month.e += amt;
+            if (d.getFullYear() === now.getFullYear()) summary.year.e += amt;
         }
     });
 
-    document.getElementById('totalBalance').innerText = `${totalIncome - totalExpense} บาท`;
+    const balance = totalIncome - totalExpense;
+    document.getElementById('totalBalance').innerText = `${balance} บาท`;
+    
+    if (balance < 0) showNotification('ระวัง! ยอดเงินคงเหลือติดลบแล้ว', 'warning');
+
     document.getElementById('incomeDay').innerText = summary.day.i;
     document.getElementById('expenseDay').innerText = summary.day.e;
     document.getElementById('incomeWeek').innerText = summary.week.i;
@@ -93,11 +131,11 @@ function updateDashboard() {
 
 function renderList() {
     const list = document.getElementById('transactionList');
-    list.innerHTML = transactions.map(tx => `
+    list.innerHTML = transactions.slice().reverse().map(tx => `
         <li>
-            <span>${tx.description} (${tx.category})</span>
-            <span style="color: ${tx.type === 'income' ? '#4CAF50' : '#e94057'}">
-                ${tx.type === 'income' ? '+' : '-'}${tx.amount}
+            <span>${tx.description} <small style="color:var(--text-muted)">(${tx.category})</small></span>
+            <span style="color: ${tx.type === 'income' ? '#4CAF50' : '#e94057'}; font-weight: bold;">
+                ${tx.type === 'income' ? '+' : '-'}${tx.amount.toLocaleString()}
             </span>
         </li>
     `).join('');
@@ -112,9 +150,18 @@ function renderCharts(cats, inc, exp) {
         type: 'doughnut',
         data: {
             labels: Object.keys(cats),
-            datasets: [{ data: Object.values(cats), backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'] }]
+            datasets: [{ 
+                data: Object.values(cats), 
+                backgroundColor: ['#e94057', '#00f2fe', '#FFCE56', '#4BC0C0', '#9966FF'],
+                borderWidth: 0
+            }]
         },
-        options: { plugins: { title: { display: true, text: 'สัดส่วนรายจ่าย', color: 'white' } } }
+        options: { 
+            plugins: { 
+                legend: { labels: { color: 'white', font: { family: 'Kanit' } } },
+                title: { display: true, text: 'สัดส่วนรายจ่าย', color: 'white', font: { size: 16 } } 
+            } 
+        }
     });
 
     const ctx2 = document.getElementById('balanceChart').getContext('2d');
@@ -122,10 +169,24 @@ function renderCharts(cats, inc, exp) {
         type: 'bar',
         data: {
             labels: ['รายรับ', 'รายจ่าย'],
-            datasets: [{ label: 'จำนวนเงิน', data: [inc, exp], backgroundColor: ['#4CAF50', '#e94057'] }]
+            datasets: [{ 
+                label: 'บาท', 
+                data: [inc, exp], 
+                backgroundColor: ['#4CAF50', '#e94057'],
+                borderRadius: 8
+            }]
         },
-        options: { plugins: { title: { display: true, text: 'รับ vs จ่าย', color: 'white' } } }
+        options: { 
+            scales: { y: { ticks: { color: 'white' } }, x: { ticks: { color: 'white' } } },
+            plugins: { 
+                legend: { display: false },
+                title: { display: true, text: 'รับ vs จ่าย ทั้งหมด', color: 'white', font: { size: 16 } } 
+            } 
+        }
     });
 }
 
-function logout() { location.reload(); }
+function logout() { 
+    showNotification('ออกจากระบบแล้ว');
+    setTimeout(() => location.reload(), 1000);
+}
