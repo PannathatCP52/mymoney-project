@@ -32,7 +32,7 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
 
     try {
         // ส่งข้อมูลไปที่หลังบ้าน (Node.js)
-        const response = await fetch('http://localhost:3000/api/login', {
+        const response = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username })
@@ -75,7 +75,7 @@ document.getElementById('addTransactionBtn').addEventListener('click', async () 
     const newTx = { userId: currentUser._id, type, category, amount };
 
     // ส่งข้อมูลไปบันทึกลง Database
-    await fetch('http://localhost:3000/api/transactions', {
+    await fetch('/api/transactions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newTx)
@@ -87,7 +87,7 @@ document.getElementById('addTransactionBtn').addEventListener('click', async () 
 });
 
 async function loadTransactions() {
-    const res = await fetch(`http://localhost:3000/api/transactions/${currentUser._id}`);
+    const res = await fetch(`/api/transactions/${currentUser._id}`);
     transactions = await res.json();
     
     renderList();
@@ -96,7 +96,7 @@ async function loadTransactions() {
 
 // ฟังก์ชันลบรายการ (ส่วนหนึ่งของ CRUD)
 async function deleteTransaction(id) {
-    await fetch(`http://localhost:3000/api/transactions/${id}`, { method: 'DELETE' });
+    await fetch(`/api/transactions/${id}`, { method: 'DELETE' });
     loadTransactions();
 }
 
