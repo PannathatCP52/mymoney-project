@@ -1,129 +1,93 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Kanit:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap');
 
-:root {
-    --bg-main: #14142b;
-    --card-bg: rgba(255, 255, 255, 0.05);
+:root[data-theme="light"] {
+    --bg-main: #f0f2f5;
+    --card-bg: #ffffff;
+    --text-main: #1c1e21;
+    --text-muted: #606770;
+    --accent-blue: #007bff;
+    --accent-pink: #dc3545;
+    --border-color: rgba(0,0,0,0.1);
+    --gradient-main: linear-gradient(135deg, #007bff, #00d4ff);
+}
+
+:root[data-theme="dark"] {
+    --bg-main: #0f0f1a;
+    --card-bg: rgba(30, 30, 50, 0.8);
     --text-main: #ffffff;
     --text-muted: #a0a0c0;
     --accent-blue: #00f2fe;
     --accent-pink: #e94057;
+    --border-color: rgba(255,255,255,0.1);
     --gradient-main: linear-gradient(135deg, #8a2387, #e94057, #f27121);
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.3s ease; }
 
 body {
-    font-family: 'Poppins', 'Kanit', sans-serif;
+    font-family: 'Kanit', sans-serif;
     background-color: var(--bg-main);
-    background-image: radial-gradient(circle at 10% 20%, rgba(0, 242, 254, 0.1) 0%, transparent 40%),
-                      radial-gradient(circle at 90% 80%, rgba(233, 64, 87, 0.1) 0%, transparent 40%);
     color: var(--text-main);
-    min-height: 100vh;
     padding: 20px;
 }
 
-/* Notification Styles */
-#notification-container {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 9999;
-}
+.container { max-width: 800px; margin: 0 auto; }
 
-.toast {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-left: 5px solid var(--accent-blue);
-    color: white;
-    padding: 15px 25px;
-    border-radius: 12px;
-    margin-bottom: 10px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-    animation: slideIn 0.5s ease out forwards;
-}
-
-@keyframes slideIn {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-.toast.success { border-left-color: #4CAF50; }
-.toast.error { border-left-color: var(--accent-pink); }
-.toast.warning { border-left-color: #FFCE56; }
-
-/* UI อื่นๆ เหมือนเดิม */
-.container { max-width: 900px; margin: 0 auto; }
 section {
     background: var(--card-bg);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
-    padding: 30px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    margin-bottom: 30px;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 20px;
 }
 
-h1 { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-.card {
-    background: rgba(255, 255, 255, 0.03);
-    padding: 20px;
-    border-radius: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+.asset-card {
+    text-align: center;
+    background: var(--gradient-main);
+    color: white;
+    padding: 30px;
+    border-radius: 20px;
+    margin-top: 15px;
 }
 
 .time-summary-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: 1fr 1fr;
     gap: 15px;
-    margin-top: 20px;
+    margin-top: 15px;
 }
 
 .time-card {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--card-bg);
     padding: 15px;
     border-radius: 15px;
     text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
 }
-
-.time-card h4 { color: var(--accent-blue); margin-bottom: 10px; }
-.inc { color: #4CAF50; font-size: 0.9em; }
-.exp { color: var(--accent-pink); font-size: 0.9em; }
 
 input, select {
     width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.1);
+    padding: 10px;
+    margin-bottom: 10px;
     border-radius: 10px;
-    color: white;
-    font-family: 'Kanit';
+    border: 1px solid var(--border-color);
+    background: var(--bg-main);
+    color: var(--text-main);
 }
 
 button {
-    background: var(--gradient-main);
-    color: white;
-    border: none;
-    padding: 12px;
+    padding: 10px 20px;
     border-radius: 10px;
+    border: none;
     cursor: pointer;
-    font-weight: 600;
-    transition: 0.3s;
+    background: var(--accent-blue);
+    color: white;
+    font-weight: 500;
 }
 
-button:hover { transform: translateY(-2px); opacity: 0.9; }
+#notification-container { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+.toast { background: var(--card-bg); padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 5px solid var(--accent-blue); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
 
-ul li {
-    display: flex;
-    justify-content: space-between;
-    padding: 15px;
-    background: rgba(255,255,255,0.02);
-    margin-bottom: 10px;
-    border-radius: 12px;
-}
-
-.chart-container { display: flex; gap: 20px; flex-wrap: wrap; margin: 20px 0; }
-.chart-box { flex: 1; min-width: 300px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px; }
+.chart-container { display: flex; flex-wrap: wrap; gap: 20px; margin: 20px 0; }
+.chart-box { flex: 1; min-width: 250px; background: var(--card-bg); padding: 15px; border-radius: 15px; }
