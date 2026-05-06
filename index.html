@@ -1,52 +1,99 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Wealth Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="logo">WEALTH AI</div>
+            <nav>
+                <div class="nav-item active"><i class="fas fa-home"></i> Home</div>
+                <div class="nav-item"><i class="fas fa-chart-line"></i> Analytics</div>
+                <div class="nav-item"><i class="fas fa-wallet"></i> Assets</div>
+            </nav>
+            <button class="btn-logout" onclick="location.reload()">Logout</button>
+        </aside>
 
-<div class="container wide-layout">
-    <section class="asset-card-wide">
-        <div class="main-wealth">
-            <h3>มูลค่าสินทรัพย์สุทธิ (Net Worth)</h3>
-            <h1 id="netWorthTHB">0 THB</h1>
-            <h2 id="netWorthUSD">$0.00</h2>
-        </div>
-        <div class="gold-details-grid">
-            <div class="gold-item">
-                <i class="fas fa-coins text-gold"></i>
-                <span>ทองคำแท่ง (ขายออก):</span>
-                <strong id="goldSellLabel">รอข้อมูล...</strong>
-            </div>
-            <div class="gold-item">
-                <i class="fas fa-hand-holding-dollar"></i>
-                <span>ทองคำแท่ง (รับซื้อ):</span>
-                <strong id="goldBuyLabel">รอข้อมูล...</strong>
-            </div>
-        </div>
-    </section>
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="search-box"><i class="fas fa-search"></i> Search Assets...</div>
+                <div class="user-profile">Status: <span class="status-online">Online</span></div>
+            </header>
 
-    <div class="dashboard-grid">
-        <div class="control-panel">
-            </div>
+            <section class="hero-section">
+                <div class="net-worth-card">
+                    <div class="card-info">
+                        <h3>Total Net Worth</h3>
+                        <h1 id="netWorthTHB">0 THB</h1>
+                        <p id="netWorthUSD">$0.00</p>
+                    </div>
+                    <div class="gold-live-box">
+                        <div class="gold-row">
+                            <span><i class="fas fa-store"></i> ทองคำแท่ง (ขาย):</span>
+                            <span id="goldSellLabel" class="text-gold">--</span>
+                        </div>
+                        <div class="gold-row">
+                            <span><i class="fas fa-hand-holding-usd"></i> ทองคำแท่ง (ซื้อ):</span>
+                            <span id="goldBuyLabel" class="text-gold">--</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-        <div class="display-panel">
-            <div class="card exchange-card">
-                <h3><i class="fas fa-globe"></i> อัตราแลกเปลี่ยน Real-time</h3>
-                <p class="update-time">อัปเดตล่าสุด: <span id="lastUpdate">...</span></p>
-                <div class="table-responsive">
+            <div class="dashboard-grid">
+                <div class="grid-item exchange-panel">
+                    <h3><i class="fas fa-globe"></i> Real-time Exchange Rates</h3>
+                    <p class="update-time">Update: <span id="lastUpdate">--:--:--</span></p>
                     <table class="exchange-table">
                         <thead>
                             <tr>
-                                <th>คู่เงิน</th>
-                                <th>ราคา (THB)</th>
-                                <th>เปลี่ยนแปลง</th>
+                                <th>Currency</th>
+                                <th>Rate (THB)</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody id="exchangeBody">
                             </tbody>
                     </table>
                 </div>
-            </div>
 
-            <div class="chart-container">
-                <canvas id="assetBarChart"></canvas>
+                <div class="grid-item chart-panel">
+                    <h3>Asset Comparison</h3>
+                    <div class="canvas-holder">
+                        <canvas id="assetBarChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid-item input-panel">
+                    <h3>Add Transaction</h3>
+                    <input type="text" id="description" placeholder="Description (เช่น ซื้อของ, เงินเดือน)">
+                    <input type="number" id="amount" placeholder="Amount">
+                    <select id="type">
+                        <option value="income">Income (+)</option>
+                        <option value="expense">Expense (-)</option>
+                    </select>
+                    <button onclick="addTransaction()" class="btn-primary">Save Data</button>
+                    
+                    <hr>
+                    <div class="gold-input">
+                        <label>Gold Amount (Baht):</label>
+                        <input type="number" id="goldQty" value="1" onchange="updateDashboard()">
+                    </div>
+                </div>
+
+                <div class="grid-item history-panel">
+                    <h3>Recent History</h3>
+                    <ul id="transactionList"></ul>
+                </div>
             </div>
-        </div>
+        </main>
     </div>
-</div>
+    <script src="script.js"></script>
+</body>
+</html>
