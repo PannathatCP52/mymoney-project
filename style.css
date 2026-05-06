@@ -1,16 +1,65 @@
-/* เพิ่มเติมจากเดิม */
-.login-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--bg-dark); display: flex; justify-content: center; align-items: center; z-index: 1000;
-}
-.login-card { background: var(--card-bg); padding: 40px; border-radius: 20px; text-align: center; }
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500&display=swap');
 
-/* Light Theme support */
+:root {
+    --bg-dark: #0b0e14;
+    --sidebar-bg: #121420;
+    --card-bg: #1b1e2e;
+    --accent: #6366f1;
+    --text-main: #ffffff;
+    --text-dim: #8b8eaf;
+    --gold: #fbbf24;
+    --border: rgba(255,255,255,0.05);
+}
+
 .light-theme {
     --bg-dark: #f0f2f5;
     --sidebar-bg: #ffffff;
     --card-bg: #ffffff;
     --text-main: #1a1a1a;
     --text-dim: #65676b;
+    --border: #e4e6eb;
 }
-.light-theme .grid-item { border: 1px solid #ddd; }
+
+* { box-sizing: border-box; font-family: 'Kanit', sans-serif; transition: background 0.3s, color 0.3s; }
+body { background: var(--bg-dark); color: var(--text-main); margin: 0; overflow-x: hidden; }
+
+/* Login Overlay */
+.login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--bg-dark); display:flex; justify-content:center; align-items:center; z-index:9999; }
+.login-card { background: var(--card-bg); padding: 50px; border-radius: 30px; text-align: center; width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+
+/* Layout */
+.app-container { display: flex; min-height: 100vh; max-width: 1600px; margin: 0 auto; }
+.sidebar { width: 260px; background: var(--sidebar-bg); padding: 40px 20px; display: flex; flex-direction: column; border-right: 1px solid var(--border); }
+.logo { font-size: 24px; font-weight: 500; color: var(--accent); margin-bottom: 40px; text-align: center; }
+.nav-item { padding: 15px 20px; border-radius: 12px; color: var(--text-dim); cursor: pointer; margin-bottom: 10px; }
+.nav-item i { margin-right: 15px; }
+.nav-item.active, .nav-item:hover { background: rgba(99, 102, 241, 0.1); color: var(--accent); }
+
+.main-content { flex: 1; padding: 40px; }
+.hero-section { margin-bottom: 30px; }
+.net-worth-card { 
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+    padding: 50px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+.net-worth-card h1 { font-size: 4rem; margin: 10px 0; }
+
+/* Grid */
+.dashboard-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 25px; }
+.grid-item { background: var(--card-bg); padding: 25px; border-radius: 20px; border: 1px solid var(--border); }
+
+/* Table & List */
+.exchange-table { width: 100%; border-collapse: collapse; }
+.exchange-table td, .exchange-table th { padding: 15px 0; border-bottom: 1px solid var(--border); }
+#transactionList { list-style: none; padding: 0; }
+#transactionList li { display: flex; justify-content: space-between; padding: 12px; background: rgba(255,255,255,0.03); margin-bottom: 8px; border-radius: 10px; }
+
+/* Inputs */
+input, select { background: rgba(139, 142, 175, 0.1); border: 1px solid var(--border); padding: 15px; border-radius: 12px; color: var(--text-main); width: 100%; margin-bottom: 15px; }
+.btn-primary { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-weight: 500; font-size: 1rem; }
+.btn-logout { background: transparent; color: #f87171; border: 1px solid #f87171; padding: 10px; border-radius: 8px; cursor: pointer; margin-top: auto; }
+
+.income { color: #4ade80; }
+.expense { color: #f87171; }
+.text-gold { color: var(--gold); }
+.chart-box { height: 350px; }
