@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Money - โปรเจกต์บันทึกรายรับรายจ่าย</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <header>
+        <h1>💰 My Money App</h1>
+        <div class="header-actions">
+            <button id="themeToggle">🌙 Dark Mode</button>
+            <button id="logoutBtn" style="display: none;">ออกจากระบบ</button>
+        </div>
+    </header>
+
+    <section id="loginSection" class="card">
+        <h2>เข้าสู่ระบบ</h2>
+        <input type="text" id="username" placeholder="ตั้งชื่อผู้ใช้ของคุณ..." required>
+        <button id="loginBtn">เข้าสู่ระบบ / สร้างบัญชี</button>
+    </section>
+
+    <section id="dashboardSection" style="display: none;">
+        
+        <div class="summary-cards">
+            <div class="card">
+                <h3>เงินคงเหลือ</h3>
+                <h2 id="totalBalance">0 บาท</h2>
+            </div>
+            <div class="card">
+                <h3>อัตราแลกเปลี่ยน (API)</h3>
+                <p id="exchangeRate">กำลังโหลดข้อมูล...</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>เพิ่มรายการใหม่</h3>
+            <div class="form-group">
+                <select id="type">
+                    <option value="income">รายรับ</option>
+                    <option value="expense">รายจ่าย</option>
+                </select>
+                <input type="text" id="category" placeholder="หมวดหมู่ เช่น อาหาร, เงินเดือน">
+                <input type="number" id="amount" placeholder="จำนวนเงิน (บาท)">
+                <button id="addTransactionBtn">บันทึก</button>
+            </div>
+        </div>
+
+        <div class="charts-container">
+            <div class="card chart-box">
+                <canvas id="pieChart"></canvas>
+            </div>
+            <div class="card chart-box">
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>ประวัติรายการ</h3>
+            <ul id="transactionList">
+                </ul>
+        </div>
+        
+    </section>
+
+        <script src="script.js"></script> 
+    </body>
+</html>
