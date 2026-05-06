@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Money - Glassmorphism Edition</title>
+    <title>My Money & Assets - Gold Edition</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -11,78 +11,66 @@
     <div id="notification-container"></div>
 
     <div class="container">
+        <!-- ปุ่มสลับโหมด Light/Dark -->
+        <div style="text-align: right; margin-bottom: 10px;">
+            <button id="themeToggle" onclick="toggleTheme()" style="background: var(--card-bg); border: 1px solid var(--accent-blue); color: var(--text-main);">🌓 สลับโหมด</button>
+        </div>
+
         <section id="loginSection">
-            <h1>My Money 💰</h1>
-            <p class="text-center" style="color: var(--text-muted); margin-bottom: 20px;">กรุณาเข้าสู่ระบบเพื่อจัดการการเงินของคุณ</p>
+            <h1>My Assets 💰</h1>
+            <p class="text-center" style="color: var(--text-muted);">เข้าสู่ระบบเพื่อดูมูลค่าสินทรัพย์รวม</p>
             <input type="text" id="username" placeholder="ชื่อผู้ใช้งาน">
             <input type="password" id="password" placeholder="รหัสผ่าน">
-            <button onclick="login()" style="width: 100%;">เข้าสู่ระบบ / สมัครสมาชิก</button>
+            <button onclick="login()" style="width: 100%;">เข้าสู่ระบบ</button>
         </section>
 
         <section id="dashboardSection" style="display:none;">
             <button id="logoutBtn" onclick="logout()">ออกจากระบบ</button>
-            <h1 style="text-align: left; font-size: 1.8em;">สวัสดี, <span id="userDisplay"></span></h1>
+            <h2>สวัสดี, <span id="userDisplay"></span></h2>
             
-            <div class="summary-cards">
-                <div class="card main-balance">
-                    <h3>เงินคงเหลือทั้งหมด</h3>
-                    <h2 id="totalBalance">0 บาท</h2>
-                </div>
+            <!-- ส่วนแสดงสินทรัพย์รวม (Net Worth) -->
+            <div class="asset-card">
+                <h3>มูลค่าสินทรัพย์รวม (Net Worth)</h3>
+                <h1 id="netWorthTHB" style="margin: 10px 0;">0 THB</h1>
+                <h3 id="netWorthUSD" style="color: var(--accent-blue); opacity: 0.8;">$0.00 USD</h3>
+                <p style="font-size: 0.8em; color: var(--text-muted); margin-top: 10px;">
+                    ราคาทองวันนี้: <span id="goldPriceLabel">กำลังโหลด...</span> บาท/บาททอง<br>
+                    เรท: 1 USD = <span id="rateLabel">...</span> THB
+                </p>
             </div>
 
+            <!-- สรุปจำนวนที่มี -->
             <div class="time-summary-grid">
                 <div class="time-card">
-                    <h4>วันนี้</h4>
-                    <p class="inc">รับ: <span id="incomeDay">0</span></p>
-                    <p class="exp">จ่าย: <span id="expenseDay">0</span></p>
+                    <h4>เงินสดสะสม</h4>
+                    <p id="totalCash">0 บาท</p>
                 </div>
                 <div class="time-card">
-                    <h4>สัปดาห์นี้</h4>
-                    <p class="inc">รับ: <span id="incomeWeek">0</span></p>
-                    <p class="exp">จ่าย: <span id="expenseWeek">0</span></p>
-                </div>
-                <div class="time-card">
-                    <h4>เดือนนี้</h4>
-                    <p class="inc">รับ: <span id="incomeMonth">0</span></p>
-                    <p class="exp">จ่าย: <span id="expenseMonth">0</span></p>
-                </div>
-                <div class="time-card">
-                    <h4>ปีนี้</h4>
-                    <p class="inc">รับ: <span id="incomeYear">0</span></p>
-                    <p class="exp">จ่าย: <span id="expenseYear">0</span></p>
+                    <h4>ทองคำที่ถือ</h4>
+                    <input type="number" id="goldQty" value="0" onchange="updateDashboard()" style="width: 80px; margin: 5px 0; text-align: center;">
+                    <p style="font-size: 0.8em;">บาททอง</p>
                 </div>
             </div>
 
             <div class="card" style="margin-top: 20px;">
-                <h3>เพิ่มรายการใหม่</h3>
+                <h3>เพิ่มรายการเงินสด</h3>
                 <div class="input-group">
-                    <input type="text" id="description" placeholder="รายละเอียด (เช่น ค่าข้าว)">
+                    <input type="text" id="description" placeholder="รายละเอียด">
                     <input type="number" id="amount" placeholder="จำนวนเงิน">
                     <select id="type">
                         <option value="income">รายรับ (+)</option>
-                        <option value="expense" selected>รายจ่าย (-)</option>
+                        <option value="expense">รายจ่าย (-)</option>
                     </select>
-                    <select id="category">
-                        <option value="อาหาร">อาหาร</option>
-                        <option value="เดินทาง">เดินทาง</option>
-                        <option value="ช้อปปิ้ง">ช้อปปิ้ง</option>
-                        <option value="บันเทิง">บันเทิง</option>
-                        <option value="อื่นๆ">อื่นๆ</option>
-                    </select>
-                    <button onclick="addTransaction()" style="width: 100%;">บันทึกรายการ</button>
+                    <button onclick="addTransaction()" style="width: 100%;">บันทึก</button>
                 </div>
             </div>
 
             <div class="chart-container">
-                <div class="chart-box">
-                    <canvas id="expenseChart"></canvas>
-                </div>
-                <div class="chart-box">
-                    <canvas id="balanceChart"></canvas>
-                </div>
+                <div class="chart-box"><canvas id="expenseChart"></canvas></div>
+                <div class="chart-box"><canvas id="balanceChart"></canvas></div>
             </div>
 
-            <h3>ประวัติรายการ</h3>
+            <h3>ประวัติรายการเงินสด</h3>
             <ul id="transactionList"></ul>
         </section>
     </div>
