@@ -1,18 +1,14 @@
 let currentUser = null;
 let transactions = [];
-let goldPrice = 41800; // ค่าเริ่มต้น
-let usdRate = 36.5;    // ค่าเริ่มต้น
+let goldPrice = 41800; 
+let usdRate = 36.5;    
 let charts = {};
 
 function toggleTheme() {
     const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
-    if(currentUser) updateDashboard(); // รีเฟรชสีตัวอักษรในกราฟ
-}
-
-if(localStorage.getItem('theme')) {
-    document.documentElement.setAttribute('data-theme', localStorage.getItem('theme'));
+    if(currentUser) updateDashboard(); 
 }
 
 async function login() {
@@ -39,9 +35,13 @@ async function fetchExternalData() {
 }
 
 async function fetchTransactions() {
-    const res = await fetch(`/api/transactions/${currentUser._id}`);
-    transactions = await res.json();
-    updateDashboard();
+    try {
+        const res = await fetch(`/api/transactions/${currentUser._id}`);
+        transactions = await res.json();
+        updateDashboard();
+    } catch (e) {
+        showNotification("โหลดข้อมูลไม่สำเร็จ เช็คการเชื่อมต่อ MongoDB", "error");
+    }
 }
 
 async function addTransaction() {
@@ -53,37 +53,18 @@ async function addTransaction() {
     await fetch('/api/transactions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: currentUser._id, description: desc, amount: amt, type, category: 'Cash' })
+        body: JSON.stringify({ 
+            userId: currentUser._id, 
+            description: desc, // ตรวจสอบว่าใช้คำว่า description
+            amount: amt, 
+            type: type, 
+            category: 'ทั่วไป' 
+        })
     });
     document.getElementById('description').value = '';
     document.getElementById('amount').value = '';
     showNotification("บันทึกเรียบร้อย");
     fetchTransactions();
-}
-
-function handleFileUpload() {
-    const file = document.getElementById('statementFile').files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-        const text = e.target.result;
-        showNotification("กำลังอ่านไฟล์...");
-        const lines = text.split('\n');
-        for(let line of lines) {
-            const match = line.match(/(\d+\.?\d*)/);
-            if(match && line.length > 5) {
-                const amt = parseFloat(match[0]);
-                await fetch('/api/transactions', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: currentUser._id, description: "Statement: "+line.substring(0,10), amount: amt, type: 'expense', category: 'Import' })
-                });
-            }
-        }
-        showNotification("นำเข้าข้อมูลสำเร็จ");
-        fetchTransactions();
-    };
-    reader.readAsText(file);
 }
 
 function updateDashboard() {
@@ -95,19 +76,18 @@ function updateDashboard() {
         const d = new Date(tx.date);
         const amt = tx.amount;
         const isToday = d.toDateString() === now.toDateString();
-        const isThisMonth = d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
         
         if(tx.type === 'income') {
             cash += amt;
             if(isToday) summary.day.i += amt;
             if(now - d < 7*24*60*60*1000) summary.week.i += amt;
-            if(isThisMonth) summary.month.i += amt;
+            if(d.getMonth() === now.getMonth()) summary.month.i += amt;
             if(d.getFullYear() === now.getFullYear()) summary.year.i += amt;
         } else {
             cash -= amt;
             if(isToday) summary.day.e += amt;
             if(now - d < 7*24*60*60*1000) summary.week.e += amt;
-            if(isThisMonth) summary.month.e += amt;
+            if(d.getMonth() === now.getMonth()) summary.month.e += amt;
             if(d.getFullYear() === now.getFullYear()) summary.year.e += amt;
         }
     });
@@ -130,9 +110,9 @@ function updateDashboard() {
 }
 
 function renderCharts(cash, gold, total) {
-    const textColor = getComputedStyle(document.documentElement).getPropertyValue('--chart-label').trim();
+    const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
 
-    // 1. Bar Chart: เปรียบเทียบมูลค่า (Requested)
+    // 1. Bar Chart: แสดงสินทรัพย์ทั้งหมด
     if(charts.bar) charts.bar.destroy();
     charts.bar = new Chart(document.getElementById('assetBarChart'), {
         type: 'bar',
@@ -149,12 +129,12 @@ function renderCharts(cash, gold, total) {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                y: { beginAtZero: true, ticks: { color: textColor } },
+                y: { ticks: { color: textColor } },
                 x: { ticks: { color: textColor } }
             },
             plugins: {
                 legend: { display: false },
-                title: { display: true, text: 'เปรียบเทียบมูลค่าสินทรัพย์', color: textColor, font: { size: 16 } }
+                title: { display: true, text: 'เปรียบเทียบมูลค่าสินทรัพย์', color: textColor }
             }
         }
     });
@@ -175,8 +155,7 @@ function renderCharts(cash, gold, total) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: 'bottom', labels: { color: textColor } },
-                title: { display: true, text: 'สัดส่วนสินทรัพย์ (%)', color: textColor, font: { size: 16 } }
+                legend: { position: 'bottom', labels: { color: textColor } }
             }
         }
     });
@@ -184,18 +163,22 @@ function renderCharts(cash, gold, total) {
 
 function renderList() {
     const list = document.getElementById('transactionList');
-    list.innerHTML = transactions.slice(-10).reverse().map(tx => `
+    list.innerHTML = transactions.slice().reverse().map(tx => {
+        // แก้ไขจุดนี้: ใช้ชื่อฟิลด์ให้ตรงกับ Database (เช่น description หรือ description_text)
+        const displayDesc = tx.description || tx.desc || "ไม่มีรายละเอียด"; 
+        return `
         <li>
-            <span>${tx.description}</span>
+            <span>${displayDesc}</span>
             <span class="${tx.type}">${tx.type==='income'?'+':'-'}${tx.amount.toLocaleString()}</span>
         </li>
-    `).join('');
+    `}).join('');
 }
 
-function showNotification(msg) {
+function showNotification(msg, type='success') {
     const container = document.getElementById('notification-container');
     const toast = document.createElement('div');
-    toast.className = 'toast'; toast.innerText = msg;
+    toast.className = `toast ${type}`; 
+    toast.innerText = msg;
     container.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
 }
