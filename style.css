@@ -1,199 +1,100 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Kanit:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Kanit:wght@300;400;500&display=swap');
 
 :root {
-    /* โทนสีจากรูปเรฟเฟอเรนซ์ */
-    --bg-main: #1e1e2f; /* สีพื้นหลังหลัก (สีกรมท่าเข้ม) */
-    --card-bg: rgba(40, 40, 65, 0.7); /* สีพื้นหลังการ์ดแบบโปร่งแสง */
+    --bg-main: #14142b;
+    --card-bg: rgba(255, 255, 255, 0.05);
     --text-main: #ffffff;
-    --text-muted: #8c8cba;
-    
-    /* สี Neon Gradients สำหรับปุ่มและจุดเด่น */
-    --gradient-primary: linear-gradient(135deg, #8a2387, #e94057, #f27121); /* ม่วง-ชมพู-ส้ม */
-    --gradient-blue: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); /* ฟ้า-ไซอัน */
-    --gradient-expense: linear-gradient(135deg, #f5576c 0%, #f093fb 100%); /* แดง-ชมพู สำหรับรายจ่าย */
-    
-    --border-color: rgba(255, 255, 255, 0.08);
+    --text-muted: #a0a0c0;
+    --accent-blue: #00f2fe;
+    --accent-pink: #e94057;
+    --gradient-main: linear-gradient(135deg, #8a2387, #e94057, #f27121);
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-    /* ผสมฟอนต์อังกฤษเท่ๆ กับฟอนต์ไทยอ่านง่าย */
     font-family: 'Poppins', 'Kanit', sans-serif;
     background-color: var(--bg-main);
+    background-image: radial-gradient(circle at 10% 20%, rgba(0, 242, 254, 0.1) 0%, transparent 40%),
+                      radial-gradient(circle at 90% 80%, rgba(233, 64, 87, 0.1) 0%, transparent 40%);
     color: var(--text-main);
-    line-height: 1.6;
-    padding: 20px;
     min-height: 100vh;
-    /* ใส่พื้นหลังให้ดูมีมิติเหมือนในรูป */
-    background-image: radial-gradient(circle at top left, #2a2a4a 0%, #1e1e2f 50%, #141425 100%);
-    background-attachment: fixed;
+    padding: 20px;
 }
 
-/* Container & Cards (สไตล์กระจก) */
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-}
+.container { max-width: 900px; margin: 0 auto; }
 
 section {
     background: var(--card-bg);
-    backdrop-filter: blur(12px); /* เอฟเฟกต์เบลอกระจก */
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
     padding: 30px;
-    border-radius: 24px; /* ขอบมนๆ ตามสไตล์แอปยุคใหม่ */
-    border: 1px solid var(--border-color);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
     margin-bottom: 30px;
 }
 
-/* Typography */
-h1, h2, h3 {
-    margin-bottom: 20px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+h1 { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+.card {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 20px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-h1 {
-    text-align: center;
-    background: var(--gradient-blue);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent; /* ทำให้ตัวหนังสือเป็นสีเกรเดียนต์ */
-    font-size: 2.5em;
-}
-
-.text-center { text-align: center; }
-
-/* Buttons */
-button {
-    background: var(--gradient-primary);
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-size: 16px;
-    font-family: 'Poppins', 'Kanit', sans-serif;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(233, 64, 87, 0.3); /* เงาสีชมพูเรืองแสง */
-}
-
-button:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 25px rgba(233, 64, 87, 0.5);
-}
-
-button#themeToggle {
-    display: none; /* ปิดปุ่ม Dark Mode ไปเลย เพราะตอนนี้เราเป็น Dark Theme สุดเท่แบบ Default แล้ว */
-}
-
-button#logoutBtn {
-    background: transparent;
-    border: 1px solid var(--text-muted);
-    color: var(--text-muted);
-    box-shadow: none;
-    float: right;
-    margin-top: -5px;
-    padding: 8px 16px;
-}
-
-button#logoutBtn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-}
-
-/* Forms & Inputs */
-input, select {
-    width: 100%;
-    padding: 14px 18px;
-    margin-bottom: 20px;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    background: rgba(0, 0, 0, 0.2); /* ช่องกรอกข้อมูลสีเข้ม */
-    color: white;
-    font-family: 'Poppins', 'Kanit', sans-serif;
-    font-size: 16px;
-    transition: all 0.3s;
-}
-
-input::placeholder {
-    color: var(--text-muted);
-}
-
-input:focus, select:focus {
-    outline: none;
-    border-color: #00f2fe; /* ขอบเรืองแสงสีฟ้าตอนพิมพ์ */
-    background: rgba(0, 0, 0, 0.4);
-    box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
-}
-
-/* Layout for Inputs */
-.input-group {
-    display: flex;
+.time-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 15px;
-    flex-wrap: wrap;
-}
-
-.input-group > * {
-    flex: 1;
-    min-width: 180px;
-}
-
-/* Lists (ประวัติรายการ) */
-ul {
-    list-style: none;
     margin-top: 20px;
 }
+
+.time-card {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 15px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.time-card h4 { color: var(--accent-blue); margin-bottom: 10px; }
+.inc { color: #4CAF50; font-size: 0.9em; }
+.exp { color: var(--accent-pink); font-size: 0.9em; }
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    color: white;
+    font-family: 'Kanit';
+}
+
+button {
+    background: var(--gradient-main);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+button:hover { transform: translateY(-2px); opacity: 0.9; }
 
 ul li {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 16px 20px;
-    margin-bottom: 12px;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 16px;
-    border-left: 4px solid #00f2fe; /* เส้นไฮไลท์ด้านซ้าย */
-    transition: transform 0.2s;
+    padding: 15px;
+    background: rgba(255,255,255,0.02);
+    margin-bottom: 10px;
+    border-radius: 12px;
 }
 
-ul li:hover {
-    transform: translateX(5px);
-    background: rgba(255, 255, 255, 0.05);
-}
-
-/* ปุ่มลบรายการ */
-ul li button {
-    background: var(--gradient-expense);
-    padding: 8px 16px;
-    font-size: 14px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(245, 87, 108, 0.3);
-}
-
-ul li button:hover {
-    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.5);
-}
-
-/* Charts Area */
-.chart-container {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 25px;
-}
-
-.chart-box {
-    flex: 1;
-    min-width: 300px;
-    background: rgba(0, 0, 0, 0.15);
-    padding: 20px;
-    border-radius: 16px;
-    border: 1px solid var(--border-color);
-}
+.chart-container { display: flex; gap: 20px; flex-wrap: wrap; margin: 20px 0; }
+.chart-box { flex: 1; min-width: 300px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px; }
