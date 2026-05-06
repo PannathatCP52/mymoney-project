@@ -82,17 +82,21 @@
                         <ul id="transactionList"></ul>
                     </div>
 
-                    <div class="grid-item chart-box">
+                    <div class="grid-item chart-box wide-chart-box">
                         <h3>Asset Value (THB)</h3>
-                        <canvas id="assetBarChart"></canvas>
+                        <div class="chart-canvas-wrapper">
+                            <canvas id="assetBarChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div id="analyticTab" style="display:none;">
-                <div class="grid-item" style="height: 500px;">
+                <div class="grid-item chart-box wide-chart-box">
                     <h3>Asset Distribution</h3>
-                    <canvas id="netWorthChart"></canvas>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="netWorthChart"></canvas>
+                    </div>
                 </div>
             </div>
         </main>
