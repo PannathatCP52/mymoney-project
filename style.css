@@ -1,52 +1,58 @@
-/* ขยายหน้าจอให้กว้างขึ้น */
-.wide-layout {
-    max-width: 1400px !important;
-    width: 95%;
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500&display=swap');
+
+:root {
+    --bg-dark: #0b0e14;
+    --sidebar-bg: #121420;
+    --card-bg: #1b1e2e;
+    --accent: #6366f1;
+    --text-main: #ffffff;
+    --text-dim: #8b8eaf;
+    --gold: #fbbf24;
 }
 
-.asset-card-wide {
-    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-    padding: 40px;
-    border-radius: 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: white;
-    margin-bottom: 25px;
-}
+* { box-sizing: border-box; font-family: 'Kanit', sans-serif; }
+body { background: var(--bg-dark); color: var(--text-main); margin: 0; overflow-x: hidden; }
 
-.gold-details-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 15px;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 20px;
-    border-radius: 15px;
-}
+.app-container { display: flex; min-height: 100vh; }
 
-/* สไตล์ตารางอัตราแลกเปลี่ยน */
-.exchange-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
+/* Sidebar */
+.sidebar { width: 240px; background: var(--sidebar-bg); padding: 30px 20px; display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); }
+.logo { font-size: 24px; font-weight: 500; color: var(--accent); margin-bottom: 50px; text-align: center; }
+.nav-item { padding: 15px; border-radius: 12px; color: var(--text-dim); cursor: pointer; margin-bottom: 10px; transition: 0.3s; }
+.nav-item i { margin-right: 15px; }
+.nav-item.active, .nav-item:hover { background: rgba(99, 102, 241, 0.1); color: var(--text-main); }
 
-.exchange-table th {
-    text-align: left;
-    padding: 12px;
-    border-bottom: 2px solid var(--border);
-    color: var(--text-dim);
-}
+/* Main Content */
+.main-content { flex: 1; padding: 30px; }
+.top-bar { display: flex; justify-content: space-between; margin-bottom: 30px; }
+.search-box { background: var(--card-bg); padding: 12px 25px; border-radius: 30px; width: 400px; color: var(--text-dim); }
 
-.exchange-table td {
-    padding: 15px 12px;
-    border-bottom: 1px solid var(--border);
+/* Hero Card */
+.hero-section { margin-bottom: 30px; }
+.net-worth-card { 
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+    padding: 40px; border-radius: 24px; display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
+.net-worth-card h1 { font-size: 3.5rem; margin: 10px 0; }
+.gold-live-box { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); }
+.gold-row { margin-bottom: 10px; display: flex; gap: 20px; }
+.text-gold { color: var(--gold); font-weight: 500; }
 
-.update-time {
-    font-size: 0.8rem;
-    color: #888;
-    margin-bottom: 15px;
-}
+/* Grid Layout */
+.dashboard-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 25px; }
+.grid-item { background: var(--card-bg); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); }
 
-.text-gold { color: #fbbf24; }
+/* Table */
+.exchange-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+.exchange-table th { text-align: left; color: var(--text-dim); padding-bottom: 15px; font-weight: 300; }
+.exchange-table td { padding: 15px 0; border-top: 1px solid rgba(255,255,255,0.05); }
+
+/* Inputs & Buttons */
+input, select { background: #25293d; border: none; padding: 15px; border-radius: 12px; color: white; width: 100%; margin-bottom: 15px; }
+.btn-primary { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-weight: 500; }
+
+/* History List */
+#transactionList li { display: flex; justify-content: space-between; padding: 15px; background: rgba(255,255,255,0.03); margin-bottom: 8px; border-radius: 10px; }
+.income { color: #4ade80; }
+.expense { color: #f87171; }
