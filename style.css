@@ -50,7 +50,7 @@ body { background: var(--bg-dark); color: var(--text-main); margin: 0; overflow-
 
 /* Table & List */
 .exchange-table { width: 100%; border-collapse: collapse; }
-.exchange-table td, .exchange-table th { padding: 15px 0; border-bottom: 1px solid var(--border); }
+.exchange-table td, .exchange-table th { padding: 15px 0; border-bottom: 1px solid var(--border);text-align: center; }
 #transactionList { list-style: none; padding: 0; }
 #transactionList li { display: flex; justify-content: space-between; padding: 12px; background: rgba(255,255,255,0.03); margin-bottom: 8px; border-radius: 10px; }
 
