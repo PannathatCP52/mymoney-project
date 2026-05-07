@@ -100,7 +100,15 @@ function renderCharts(cash, gold) {
         charts.bar = new Chart(barCtx, {
             type: 'bar',
             data: { labels: ['Cash', 'Gold'], datasets: [{ data: [cash, gold], backgroundColor: ['#6366f1', '#fbbf24'] }] },
-            options: { responsive: true, maintainAspectRatio: true }
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false // This removes the "undefined" box
+                    }
+                }
+            }
         });
     }
 
