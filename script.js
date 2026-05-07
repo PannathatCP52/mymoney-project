@@ -100,7 +100,7 @@ function renderCharts(cash, gold) {
         charts.bar = new Chart(barCtx, {
             type: 'bar',
             data: { labels: ['Cash', 'Gold'], datasets: [{ data: [cash, gold], backgroundColor: ['#6366f1', '#fbbf24'] }] },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: { responsive: true, maintainAspectRatio: true }
         });
     }
 
@@ -109,7 +109,7 @@ function renderCharts(cash, gold) {
         charts.pie = new Chart(pieCtx, {
             type: 'doughnut',
             data: { labels: ['Cash', 'Gold'], datasets: [{ data: [cash, gold], backgroundColor: ['#6366f1', '#fbbf24'], borderWidth: 0 }] },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: { responsive: true, maintainAspectRatio: true }
         });
     }
 }
