@@ -58,7 +58,7 @@ async function addTransaction() {
     const type = document.getElementById('type').value;
     if (!desc || isNaN(amt)) return alert("ข้อมูลไม่ครบ");
     let currentCash = 0; transactions.forEach(tx => currentCash += (tx.type === 'income' ? tx.amount : -tx.amount));
-    if (type === 'expense' && (currentCash - amt) < 0) { return alert('ยอดเงินไม่เพียงพอ');
+    if (type === 'expense' && (currentCash - amt) < 0) return alert('ยอดเงินไม่เพียงพอ');
     transactions.push({ description: desc, amount: amt, type: type });
     document.getElementById('description').value = '';
     document.getElementById('amount').value = '';
