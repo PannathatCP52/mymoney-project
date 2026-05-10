@@ -45,8 +45,75 @@ body { background: var(--bg-dark); color: var(--text-main); margin: 0; overflow-
 .net-worth-card h1 { font-size: 4rem; margin: 10px 0; }
 
 /* Grid */
-.dashboard-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 25px; }
-.grid-item { background: var(--card-bg); padding: 25px; border-radius: 20px; border: 1px solid var(--border); }
+.dashboard-grid { 
+    display: grid; 
+    grid-template-columns: 1.2fr 1fr; 
+    gap: 25px; 
+    align-items: start; /* ป้องกันไม่ให้กล่องซ้าย-ขวายืดความสูงตามกันจนเสียทรง */
+}
+.grid-item { 
+    background: var(--card-bg); 
+    padding: 25px; 
+    border-radius: 20px; 
+    border: 1px solid var(--border); 
+    width: 100%; 
+    overflow: hidden; /* ป้องกันเนื้อหาล้นออกด้านข้าง */
+}
+
+/* Table & List */
+.exchange-table { width: 100%; border-collapse: collapse; }
+.exchange-table td, .exchange-table th { padding: 15px 0; border-bottom: 1px solid var(--border);text-align: center; }
+
+/* จัดการ History Panel ไม่ให้ยาวทะลุกรอบ */
+.history-panel { 
+    height: 400px; /* ล็อกความสูงให้พอดีกับหน้าจอ */
+    display: flex; 
+    flex-direction: column; 
+}
+#transactionList { 
+    list-style: none; 
+    padding: 0; 
+    margin: 0;
+    overflow-y: auto; /* เพิ่ม Scrollbar เมื่อรายการยาวเกินกล่อง */
+    flex: 1; 
+    padding-right: 10px; /* เว้นระยะให้ Scrollbar */
+}
+/* ตกแต่ง Scrollbar ให้ดูสวยงามเข้ากับธีม */
+#transactionList::-webkit-scrollbar { width: 6px; }
+#transactionList::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 10px; }
+#transactionList::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+#transactionList li { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    padding: 12px; 
+    background: rgba(255,255,255,0.03); 
+    margin-bottom: 8px; 
+    border-radius: 10px; 
+    word-break: break-word; /* สั่งให้ตัดคำอัตโนมัติถ้าข้อความยาวเกินไป */
+    gap: 10px; /* เว้นระยะระหว่างชื่อรายการและตัวเงิน */
+}
+
+/* Inputs */
+input, select { background: rgba(139, 142, 175, 0.1); border: 1px solid var(--border); padding: 15px; border-radius: 12px; color: var(--text-main); width: 100%; margin-bottom: 15px; }
+.btn-primary { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-weight: 500; font-size: 1rem; }
+.btn-logout { background: transparent; color: #f87171; border: 1px solid #f87171; padding: 10px; border-radius: 8px; cursor: pointer; margin-top: auto; }
+
+.income { color: #4ade80; font-weight: 500; min-width: max-content; }
+.expense { color: #f87171; font-weight: 500; min-width: max-content; }
+.text-gold { color: var(--gold); }
+
+/* จัดการ Chart Box ให้อยู่ในกรอบเสมอ */
+.chart-box { 
+    height: 400px; 
+    display: flex; 
+    flex-direction: column; 
+}
+.chart-box canvas { 
+    flex: 1; /* ให้กราฟยืดขยายเต็มพื้นที่ที่เหลือในกล่อง */
+    min-height: 0; /* ป้องกันบั๊กของ Chart.js ที่ชอบดันกล่องทะลุ */
+}
 
 /* Table & List */
 .exchange-table { width: 100%; border-collapse: collapse; }
