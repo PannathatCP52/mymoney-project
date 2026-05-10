@@ -186,9 +186,25 @@ input, select { background: rgba(139, 142, 175, 0.1); border: 1px solid var(--bo
     font-weight: 500;
 }
 
-/* ลดขนาดและจัดกึ่งกลางกราฟวงกลม (Pie Chart) */
+/* คุมขนาดกล่องครอบกราฟแทนการคุมที่ตัวกราฟโดยตรง */
+.chart-container {
+    position: relative;
+    margin: 20px auto;
+    height: 300px; /* ปรับความสูงตรงนี้เพื่อเพิ่ม/ลดขนาดวงกลม */
+    width: 300px;  /* ปรับความกว้างให้เท่ากับความสูงเพื่อให้เป็นวงกลมสวยๆ */
+}
+
+/* ปรับให้ Canvas ขยายเต็มกล่องครอบ */
 #netWorthChart {
-    max-height: 320px !important; /* จำกัดความสูงไม่ให้เกิน 320px */
-    max-width: 320px !important;  /* จำกัดความกว้างไม่ให้เกิน 320px */
-    margin: 20px auto !important; /* เว้นระยะบน-ล่าง และจัดให้อยู่ตรงกลาง */
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* ปรับความสูงกล่องใหญ่ให้พอดี */
+#analyticTab .grid-item {
+    min-height: 450px;
+    height: auto !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* จัดทุกอย่างในกล่องให้อยู่ตรงกลาง */
 }
