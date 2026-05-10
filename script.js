@@ -2,8 +2,8 @@ let currentUser = null;
 let transactions = [];
 let goldPriceThai = 42000; 
 let charts = {};
+let favRates = JSON.parse(localStorage.getItem('favRates')) || ['USD/THB'];
 
-// 1. Auth Logic
 // 1. Auth Logic
 async function login() {
     const user = document.getElementById('username').value;
@@ -65,19 +65,73 @@ async function fetchExternalData() {
         const res = await fetch('https://open.er-api.com/v6/latest/USD');
         const data = await res.json();
         window.usdRate = data.rates.THB;
+        window.apiRates = data.rates; // เก็บข้อมูลทั้งหมดไว้ใช้ตอนกดดาว/เรียงลำดับ
         
-        const tableBody = document.getElementById('exchangeBody');
-        const list = [
-            { p: "USD/THB", r: data.rates.THB.toFixed(2) },
-            { p: "JPY/THB", r: (data.rates.THB / data.rates.JPY).toFixed(4) },
-            { p: "EUR/THB", r: (data.rates.THB / data.rates.EUR).toFixed(2) }
-        ];
-        tableBody.innerHTML = list.map(i => `<tr><td>${i.p}</td><td>${i.r}</td><td class="income">Live</td></tr>`).join('');
+        updateExchangeTable(); // เรียกฟังก์ชันสร้างตาราง
         
         document.getElementById('goldSellLabel').innerText = goldPriceThai.toLocaleString() + " ฿";
         document.getElementById('goldBuyLabel').innerText = (goldPriceThai - 100).toLocaleString() + " ฿";
         updateDashboard();
     } catch (e) { console.error("API Error", e); }
+}
+
+// ฟังก์ชันสร้างตารางและจัดเรียงดาว (เพิ่มใหม่)
+function updateExchangeTable() {
+    const rates = window.apiRates;
+    if(!rates) return;
+
+    // 1. เพิ่มคู่เงินที่ต้องการให้แสดงได้ที่นี่เลยครับ
+    const allPairs = [
+        { p: "USD/THB", r: rates.THB.toFixed(2) },
+        { p: "JPY/THB", r: (rates.THB / rates.JPY).toFixed(4) },
+        { p: "EUR/THB", r: (rates.THB / rates.EUR).toFixed(2) },
+        { p: "GBP/THB", r: (rates.THB / rates.GBP).toFixed(2) },
+        { p: "CNY/THB", r: (rates.THB / rates.CNY).toFixed(2) },
+        { p: "USD/JPY", r: rates.JPY.toFixed(2) }, // ดอลลาร์-เยน
+        { p: "EUR/USD", r: (1 / rates.EUR).toFixed(4) }, // ยูโร-ดอลลาร์
+        { p: "GBP/USD", r: (1 / rates.GBP).toFixed(4) } // ปอนด์-ดอลลาร์
+    ];
+
+    // 2. จัดเรียงลำดับ: ให้คู่เงินที่ติดดาว (อยู่บนสุด) ขึ้นมาก่อน
+    allPairs.sort((a, b) => {
+        const aFav = favRates.includes(a.p) ? 1 : 0;
+        const bFav = favRates.includes(b.p) ? 1 : 0;
+        return bFav - aFav; 
+    });
+
+    // 3. วาดตารางใหม่
+    const tableBody = document.getElementById('exchangeBody');
+    tableBody.innerHTML = allPairs.map(i => {
+        const isFav = favRates.includes(i.p);
+        // ถ้าเป็น Favorite ใช้ดาวทึบสีทอง (fas) ถ้าไม่ใช่ใช้ดาวโปร่งสีเทา (far)
+        const starIcon = isFav 
+            ? `<i class="fas fa-star" style="color: var(--gold); cursor: pointer; margin-right: 8px;"></i>` 
+            : `<i class="far fa-star" style="color: var(--text-dim); cursor: pointer; margin-right: 8px;"></i>`;
+            
+        return `<tr>
+            <td style="text-align: left; padding-left: 20px;" onclick="toggleFavRate('${i.p}')">
+                ${starIcon} <span style="cursor: pointer;">${i.p}</span>
+            </td>
+            <td>${i.r}</td>
+            <td class="income">Live</td>
+        </tr>`;
+    }).join('');
+}
+
+// ฟังก์ชันเปิด/ปิดดาว (เพิ่มใหม่)
+function toggleFavRate(pair) {
+    if (favRates.includes(pair)) {
+        // ถ้ามีอยู่แล้วให้เอาออก (เลิกติดดาว)
+        favRates = favRates.filter(p => p !== pair);
+    } else {
+        // ถ้ายังไม่มีให้เพิ่มเข้าไป (ติดดาว)
+        favRates.push(pair);
+    }
+    // เซฟลง Local Storage เผื่อรีเฟรชหน้าเว็บ
+    localStorage.setItem('favRates', JSON.stringify(favRates));
+    
+    // รีเฟรชตารางเพื่อให้รายการที่กดดาวเด้งขึ้นไปบนสุด
+    updateExchangeTable();
 }
 
 // แทนที่ฟังก์ชัน addTransaction เดิมด้วยโค้ดนี้
