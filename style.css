@@ -142,3 +142,20 @@ input, select { background: rgba(139, 142, 175, 0.1); border: 1px solid var(--bo
 .expense { color: #f87171; }
 .text-gold { color: var(--gold); }
 .chart-box { height: 350px; }
+
+/* บังคับให้ส่วน Net Worth และราคาเขย่าทองเป็นสีขาวเสมอ */
+.net-worth-card, 
+.net-worth-card p, 
+.net-worth-card h1, 
+.net-worth-card h2,
+.net-worth-card span,
+#goldSellLabel, 
+#goldBuyLabel,
+[id*="gold"] { 
+    color: #ffffff !important; 
+}
+
+/* เพิ่มเติม: ถ้าคำว่า Gold (Sell) หรือ Gold (Buy) อยู่ใน label หรือ p ภายในโซนนั้น */
+.net-worth-card div p {
+    color: rgba(255, 255, 255, 0.8) !important; /* สีขาวแบบจางลงนิดนึงให้ดูมีมิติ */
+}
