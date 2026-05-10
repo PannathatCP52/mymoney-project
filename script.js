@@ -21,6 +21,17 @@ async function login() {
         document.getElementById('userDisplay').innerText = currentUser;
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('dashboardSection').style.display = 'flex';
+        
+        // ---- เพิ่มบรรทัดนี้เข้าไปครับ ----
+        loadGoldQty(); 
+        // -----------------------------
+
+        await fetchExternalData();
+        await loadTransactions(); 
+    } catch (err) {
+        console.error("Login Error:", err);
+        alert("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
+    }
 }
 
 // ฟังก์ชันใหม่: ดึงประวัติจาก Database
