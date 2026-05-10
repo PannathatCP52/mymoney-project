@@ -301,6 +301,24 @@ function renderCharts(cash, gold) {
     const pieLabel = document.getElementById('piePercent');
     
     if (barLabel) barLabel.innerHTML = htmlContent;
+    }
+   
+// --- ฟังก์ชันสำหรับจัดการทองคำ ---
+function saveGoldQty() {
+    const qty = document.getElementById('goldQty').value;
+    // เซฟลงเครื่องโดยผูกกับชื่อผู้ใช้ เช่น goldQty_admin = 5
+    localStorage.setItem(`goldQty_${currentUser}`, qty); 
+    updateDashboard(); // อัปเดตกราฟและยอดเงินรวม
+}
+
+function loadGoldQty() {
+    // โหลดข้อมูลจากชื่อผู้ใช้นั้นๆ
+    const savedQty = localStorage.getItem(`goldQty_${currentUser}`);
+    if (savedQty !== null) {
+        document.getElementById('goldQty').value = savedQty;
+    } else {
+        document.getElementById('goldQty').value = "0"; // ค่าเริ่มต้น
+    }
 }
     if (pieLabel) pieLabel.innerHTML = htmlContent;
     
