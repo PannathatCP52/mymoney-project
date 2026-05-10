@@ -114,14 +114,65 @@ function updateDashboard() {
     renderCharts(cash, goldValue);
 }
 
+// ฟังก์ชันช่วยกรองวันที่ (เพิ่มใหม่)
+function filterTransactions(txs, filterType) {
+    if (filterType === 'all') return txs;
+    
+    const now = new Date();
+    return txs.filter(tx => {
+        // ถ้าข้อมูลเก่าไม่มี date ให้ถือว่าเป็นของวันนี้ไปก่อนเพื่อป้องกันบั๊ก
+        const txDate = tx.date ? new Date(tx.date) : new Date();
+        
+        if (filterType === 'daily') {
+            return txDate.toDateString() === now.toDateString();
+        } else if (filterType === 'weekly') {
+            const pastWeek = new Date();
+            pastWeek.setDate(now.getDate() - 7);
+            return txDate >= pastWeek;
+        } else if (filterType === 'monthly') {
+            return txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear();
+        } else if (filterType === 'yearly') {
+            return txDate.getFullYear() === now.getFullYear();
+        }
+        return true;
+    });
+}
+
+// อัปเดตฟังก์ชัน renderHistory ใหม่ เพื่อคำนวณและแสดงผลตามตัวกรอง
 function renderHistory() {
+    const filter = document.getElementById('timeFilter')?.value || 'all';
+    const filteredTxs = filterTransactions(transactions, filter);
+
+    // 1. คำนวณสรุปยอดตามช่วงเวลาที่เลือก
+    let periodInc = 0;
+    let periodExp = 0;
+    filteredTxs.forEach(tx => {
+        if (tx.type === 'income') periodInc += tx.amount;
+        else periodExp += tx.amount;
+    });
+
+    const summaryDiv = document.getElementById('periodSummary');
+    if(summaryDiv) {
+        summaryDiv.innerHTML = `
+            <span class="income"><i class="fas fa-arrow-down"></i> รายรับ: ฿${periodInc.toLocaleString()}</span>
+            <span class="expense"><i class="fas fa-arrow-up"></i> รายจ่าย: ฿${periodExp.toLocaleString()}</span>
+        `;
+    }
+
+    // 2. แสดงรายการ
     const list = document.getElementById('transactionList');
-    list.innerHTML = transactions.slice().reverse().map(tx => `
-        <li>
-            <span>${tx.description || "รายการทั่วไป"}</span>
-            <span class="${tx.type}">${tx.type==='income'?'+':'-'}${tx.amount.toLocaleString()}</span>
-        </li>
-    `).join('');
+    list.innerHTML = filteredTxs.slice().reverse().map(tx => {
+        const dateStr = tx.date ? new Date(tx.date).toLocaleDateString('th-TH') : 'ไม่มีวันที่';
+        return `
+            <li>
+                <div style="display: flex; flex-direction: column;">
+                    <span>${tx.description || "รายการทั่วไป"}</span>
+                    <small style="color: var(--text-dim); font-size: 0.75rem; margin-top: 2px;">${dateStr}</small>
+                </div>
+                <span class="${tx.type}">${tx.type==='income'?'+':'-'}฿${tx.amount.toLocaleString()}</span>
+            </li>
+        `;
+    }).join('');
 }
 
 // 5. Chart Logic (แก้ ReferenceError)
