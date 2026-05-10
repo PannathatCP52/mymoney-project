@@ -159,3 +159,29 @@ input, select { background: rgba(139, 142, 175, 0.1); border: 1px solid var(--bo
 .net-worth-card div p {
     color: rgba(255, 255, 255, 0.8) !important; /* สีขาวแบบจางลงนิดนึงให้ดูมีมิติ */
 }
+
+/* ปรับให้กล่อง Analytics ขยายตามเนื้อหาอัตโนมัติ */
+#analyticTab .grid-item {
+    height: auto !important; 
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ปรับตัวหนังสือใน Select Filter ให้เป็นสีดำ */
+#timeFilter, #timeFilter option {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+/* สไตล์สำหรับตัวเลขเปอร์เซ็นต์ใต้กราฟ */
+.percent-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 15px;
+    padding: 10px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    font-weight: 500;
+}
