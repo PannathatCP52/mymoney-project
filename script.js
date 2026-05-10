@@ -22,6 +22,16 @@ async function login() {
         document.getElementById('userDisplay').innerText = currentUser;
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('dashboardSection').style.display = 'flex';
+
+        loadGoldQty(); 
+        // -----------------------------
+
+        await fetchExternalData();
+        await loadTransactions(); 
+    } catch (err) {
+        console.error("Login Error:", err);
+        alert("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
+    }
         
         await fetchExternalData();
         await loadTransactions(); // เรียกใช้ฟังก์ชันดึงข้อมูลจากฐานข้อมูล
