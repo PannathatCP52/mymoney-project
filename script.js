@@ -80,43 +80,23 @@ async function fetchExternalData() {
     } catch (e) { console.error("API Error", e); }
 }
 
+// แทนที่ฟังก์ชัน addTransaction เดิมด้วยโค้ดนี้
 async function addTransaction() {
     const desc = document.getElementById('description').value;
     const amt = parseFloat(document.getElementById('amount').value);
     const type = document.getElementById('type').value;
-    
     if (!desc || isNaN(amt)) return alert("ข้อมูลไม่ครบ");
     
-    // เช็คยอดเงินคงเหลือ
     let currentCash = 0; 
     transactions.forEach(tx => currentCash += (tx.type === 'income' ? tx.amount : -tx.amount));
     if (type === 'expense' && (currentCash - amt) < 0) return alert('ยอดเงินไม่เพียงพอ');
     
-    // สร้าง Object ข้อมูลเตรียมส่งไป Database
-    const newTx = { 
-        userId: currentUser, 
-        description: desc, 
-        amount: amt, 
-        type: type 
-    };
+    // เพิ่ม date: new Date().toISOString() เข้าไป
+    transactions.push({ description: desc, amount: amt, type: type, date: new Date().toISOString() });
     
-    try {
-        // ยิงข้อมูลไปที่ API เพื่อเซฟลง MongoDB
-        const res = await fetch('/api/transactions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newTx)
-        });
-        const savedTx = await res.json(); // ข้อมูลที่เซฟเสร็จแล้วส่งกลับมา
-        
-        transactions.push(savedTx); // เอาเข้า Array เพื่อแสดงผล
-        document.getElementById('description').value = '';
-        document.getElementById('amount').value = '';
-        updateDashboard(); // อัปเดตกราฟและประวัติ
-    } catch (err) {
-        console.error("Save Data Error:", err);
-        alert("ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่");
-    }
+    document.getElementById('description').value = '';
+    document.getElementById('amount').value = '';
+    updateDashboard();
 }
 
 function updateDashboard() {
