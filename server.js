@@ -25,11 +25,42 @@ const transactionSchema = new mongoose.Schema({
 });
 const Transaction = mongoose.model('Transaction', transactionSchema);
 
+// --- สร้างโครงสร้างข้อมูลสำหรับ User เก็บทองคำ ---
+const userSchema = new mongoose.Schema({
+    username: String,
+    goldQty: { type: Number, default: 0 }
+});
+const User = mongoose.model('User', userSchema);
+
 // --- API Routes ---
-// 1. ระบบ Login (จำลองการสร้าง/ค้นหา User)
-app.post('/api/login', (req, res) => {
+// 1. ระบบ Login (ค้นหา User หรือสร้างใหม่ถ้ายังไม่มี)
+app.post('/api/login', async (req, res) => {
     const { username } = req.body;
-    res.json({ _id: username, username: username }); 
+    try {
+        let user = await User.findOne({ username: username });
+        if (!user) {
+            user = new User({ username: username, goldQty: 0 });
+            await user.save();
+        }
+        res.json(user); 
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 1.5 เพิ่ม API สำหรับอัปเดตจำนวนทองคำ
+app.post('/api/gold', async (req, res) => {
+    const { username, goldQty } = req.body;
+    try {
+        const user = await User.findOneAndUpdate(
+            { username: username },
+            { goldQty: goldQty },
+            { new: true }
+        );
+        res.json(user);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // 2. ดึงรายการทั้งหมด
