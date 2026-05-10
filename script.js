@@ -174,4 +174,25 @@ function renderCharts(cash, gold) {
             options: { responsive: true, maintainAspectRatio: false }
         });
     }
+    
+    // --- เพิ่มโค้ดส่วนนี้ต่อท้ายสุดในฟังก์ชัน renderCharts ---
+    const totalAsset = cash + gold;
+    const percentageDiv = document.getElementById('assetPercentage');
+    
+    if (percentageDiv) {
+        if (totalAsset > 0) {
+            const cashPercent = ((cash / totalAsset) * 100).toFixed(1);
+            const goldPercent = ((gold / totalAsset) * 100).toFixed(1);
+            
+            // แสดงผลเปอร์เซ็นต์ โดยใช้สีเดียวกับกราฟ
+            percentageDiv.innerHTML = `
+                <span style="color: #6366f1;">Cash: ${cashPercent}%</span> 
+                <span style="margin: 0 15px; color: var(--text-dim);">|</span> 
+                <span style="color: #fbbf24;">Gold: ${goldPercent}%</span>
+            `;
+        } else {
+            // กรณีที่ยอดเงินและทองเป็น 0 ทั้งคู่
+            percentageDiv.innerHTML = `<span style="color: var(--text-dim);">ยังไม่มีข้อมูลสินทรัพย์</span>`;
+        }
+    }
 }
