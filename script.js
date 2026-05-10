@@ -4,14 +4,42 @@ let goldPriceThai = 42000;
 let charts = {};
 
 // 1. Auth Logic
-function login() {
+// 1. Auth Logic
+async function login() {
     const user = document.getElementById('username').value;
     if(!user) return alert("กรุณาระบุชื่อผู้ใช้");
-    currentUser = user;
-    document.getElementById('userDisplay').innerText = user;
-    document.getElementById('loginSection').style.display = 'none';
-    document.getElementById('dashboardSection').style.display = 'flex';
-    fetchExternalData();
+    
+    try {
+        // ยิง API ไปที่ server.js เพื่อล็อกอิน
+        const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: user })
+        });
+        const userData = await res.json();
+        
+        currentUser = userData.username;
+        document.getElementById('userDisplay').innerText = currentUser;
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('dashboardSection').style.display = 'flex';
+        
+        await fetchExternalData();
+        await loadTransactions(); // เรียกใช้ฟังก์ชันดึงข้อมูลจากฐานข้อมูล
+    } catch (err) {
+        console.error("Login Error:", err);
+        alert("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
+    }
+}
+
+// ฟังก์ชันใหม่: ดึงประวัติจาก Database
+async function loadTransactions() {
+    try {
+        const res = await fetch(`/api/transactions/${currentUser}`);
+        transactions = await res.json();
+        updateDashboard(); // อัปเดตหน้าจอหลังจากได้ข้อมูล
+    } catch (err) {
+        console.error("Load Data Error:", err);
+    }
 }
 
 function logout() { location.reload(); }
