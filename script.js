@@ -22,9 +22,11 @@ async function login() {
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('dashboardSection').style.display = 'flex';
         
-        // ---- เพิ่มบรรทัดนี้เข้าไปครับ ----
-        loadGoldQty(); 
-        // -----------------------------
+        // ดึงจำนวนทองคำจากฐานข้อมูลมาใส่ในช่องกรอกทันที
+        const goldQtyInput = document.getElementById('goldQty');
+        if (goldQtyInput) {
+            goldQtyInput.value = userData.goldQty || 0;
+        }
 
         await fetchExternalData();
         await loadTransactions(); 
