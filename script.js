@@ -10,7 +10,6 @@ async function login() {
     if(!user) return alert("กรุณาระบุชื่อผู้ใช้");
     
     try {
-        // ยิง API ไปที่ server.js เพื่อล็อกอิน
         const res = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -22,19 +21,13 @@ async function login() {
         document.getElementById('userDisplay').innerText = currentUser;
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('dashboardSection').style.display = 'flex';
-
+        
+        // ---- เพิ่มบรรทัดนี้เข้าไปครับ ----
         loadGoldQty(); 
         // -----------------------------
 
         await fetchExternalData();
         await loadTransactions(); 
-    } catch (err) {
-        console.error("Login Error:", err);
-        alert("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
-    }
-        
-        await fetchExternalData();
-        await loadTransactions(); // เรียกใช้ฟังก์ชันดึงข้อมูลจากฐานข้อมูล
     } catch (err) {
         console.error("Login Error:", err);
         alert("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
