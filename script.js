@@ -314,7 +314,8 @@ function renderCharts(cash, gold) {
     const pieLabel = document.getElementById('piePercent');
     
     if (barLabel) barLabel.innerHTML = htmlContent;
-    }
+    if (pieLabel) pieLabel.innerHTML = htmlContent;
+}
    
 // --- ฟังก์ชันสำหรับจัดการทองคำ (บันทึกลง Database) ---
 async function saveGoldQty() {
