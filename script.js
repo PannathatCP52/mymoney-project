@@ -316,21 +316,22 @@ function renderCharts(cash, gold) {
     if (barLabel) barLabel.innerHTML = htmlContent;
     }
    
-// --- ฟังก์ชันสำหรับจัดการทองคำ ---
-function saveGoldQty() {
-    const qty = document.getElementById('goldQty').value;
-    // เซฟลงเครื่องโดยผูกกับชื่อผู้ใช้ เช่น goldQty_admin = 5
-    localStorage.setItem(`goldQty_${currentUser}`, qty); 
-    updateDashboard(); // อัปเดตกราฟและยอดเงินรวม
-}
-
-function loadGoldQty() {
-    // โหลดข้อมูลจากชื่อผู้ใช้นั้นๆ
-    const savedQty = localStorage.getItem(`goldQty_${currentUser}`);
-    if (savedQty !== null) {
-        document.getElementById('goldQty').value = savedQty;
-    } else {
-        document.getElementById('goldQty').value = "0"; // ค่าเริ่มต้น
+// --- ฟังก์ชันสำหรับจัดการทองคำ (บันทึกลง Database) ---
+async function saveGoldQty() {
+    const qty = parseFloat(document.getElementById('goldQty').value) || 0;
+    
+    try {
+        // ส่งยอดใหม่ไปบันทึกที่ Database
+        await fetch('/api/gold', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: currentUser, goldQty: qty })
+        });
+        
+        // อัปเดตกราฟและยอดรวมทันที
+        updateDashboard(); 
+    } catch (err) {
+        console.error("Save Gold Error:", err);
     }
 }
     if (pieLabel) pieLabel.innerHTML = htmlContent;
