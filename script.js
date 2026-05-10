@@ -316,7 +316,7 @@ function renderCharts(cash, gold) {
     if (barLabel) barLabel.innerHTML = htmlContent;
     if (pieLabel) pieLabel.innerHTML = htmlContent;
 }
-   
+
 // --- ฟังก์ชันสำหรับจัดการทองคำ (บันทึกลง Database) ---
 async function saveGoldQty() {
     const qty = parseFloat(document.getElementById('goldQty').value) || 0;
@@ -335,5 +335,3 @@ async function saveGoldQty() {
         console.error("Save Gold Error:", err);
     }
 }
-    if (pieLabel) pieLabel.innerHTML = htmlContent;
-    
