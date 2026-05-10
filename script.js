@@ -280,4 +280,20 @@ function renderCharts(cash, gold) {
             percentageDiv.innerHTML = `<span style="color: var(--text-dim);">ยังไม่มีข้อมูลสินทรัพย์</span>`;
         }
     }
+
+    // --- ก๊อปปี้ส่วนนี้ไปวางก่อนปิดฟังก์ชัน renderCharts ---
+    const total = cash + gold;
+    const cashP = total > 0 ? ((cash / total) * 100).toFixed(1) : 0;
+    const goldP = total > 0 ? ((gold / total) * 100).toFixed(1) : 0;
+
+    const htmlContent = `
+        <span style="color: #6366f1;"><i class="fas fa-wallet"></i> Cash: ${cashP}%</span>
+        <span style="color: #fbbf24;"><i class="fas fa-coins"></i> Gold: ${goldP}%</span>
+    `;
+
+    const barLabel = document.getElementById('barPercent');
+    const pieLabel = document.getElementById('piePercent');
+    
+    if (barLabel) barLabel.innerHTML = htmlContent;
+    if (pieLabel) pieLabel.innerHTML = htmlContent;
 }
